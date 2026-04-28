@@ -1,0 +1,41 @@
+{
+  "name": "uts-pplos-a-2410511008",
+  "version": "1.0.0",
+  "description": "Nama : Marselia Yura Alinski\r NIM : 2410511008\r Kelas : A - Informatika",
+  "homepage": "https://github.com/marselia09/uts-pplos-a-2410511008#readme",
+  "bugs": {
+    "url": "https://github.com/marselia09/uts-pplos-a-2410511008/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marselia09/uts-pplos-a-2410511008.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+ "scripts": {
+    "start": "node gateway/index.js",
+    "start-auth": "node services/auth/index.js",
+    "start-kos": "node services/service2-kosservice/index.js",
+    "start-dev": "nodemon gateway/index.js",
+    "start-auth-dev": "nodemon services/auth/index.js",
+    "start-kos-dev": "nodemon services/service2-kosservice/index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.4.1",
+    "http-proxy-middleware": "^3.0.5",
+    "mysql2": "^3.22.3"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.14"
+  }
+}
+
