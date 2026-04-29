@@ -1,14 +1,14 @@
 const mysql = require("mysql2/promise");
 require("dotenv").config({
-  path: require("path").join(__dirname, "../../.env"),
+  path: require("path").join(__dirname, "../../../.env"),
 });
 
 const pool = mysql.createPool({
-  host: process.env.DB.HOST || "localhost",
-  port: process.env.DB.PORT || 3306,
-  database: process.env.DB.NAME || "apigateway_db",
-  user: process.env.DB.USER || "root",
-  password: process.env.DB.PASS || "",
+  host: process.env.DB_HOST || "localhost",
+  port: Number(process.env.DB_PORT || 3306),
+  database: process.env.DB_DATABASE || "sistem_koskosan_db",
+  user: process.env.DB_USERNAME || "root",
+  password: process.env.DB_PASSWORD || "",
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -32,4 +32,4 @@ const handlequery = async (query, params) => {
     connection.release();
   }
 };
-module.exports = { handlequery };
+module.exports = { handlequery, pool };
