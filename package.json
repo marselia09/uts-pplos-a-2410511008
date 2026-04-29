@@ -18,20 +18,29 @@
     "doc": "docs"
   },
  "scripts": {
+   "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node gateway/index.js",
     "start-auth": "node services/auth/index.js",
+    "start-user": "cd services/service1-userservice && php -S 0.0.0.0:3002 index.php",
     "start-kos": "node services/service2-kosservice/index.js",
     "start-dev": "nodemon gateway/index.js",
     "start-auth-dev": "nodemon services/auth/index.js",
-    "start-kos-dev": "nodemon services/service2-kosservice/index.js"
+    "start-user-dev": "cd services/service1-userservice && nodemon --watch . --ext php --exec \"php -S 0.0.0.0:3002\"",
+    "start-kos-dev": "nodemon services/service2-kosservice/index.js",
+    "dev": "concurrently \"npm run start-dev\" \"npm run start-auth-dev\" \"npm run start-user-dev\" \"npm run start-kos-dev\" "
   },
-  "dependencies": {
+ "dependencies": {
+    "@prisma/client": "^7.8.0",
     "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.4.1",
     "http-proxy-middleware": "^3.0.5",
-    "mysql2": "^3.22.3"
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.22.3",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
