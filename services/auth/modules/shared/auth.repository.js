@@ -1,6 +1,6 @@
 const { handlequery, pool } = require("../../config/database.js");
 
-const allowedProfileTables = new Set(["userprofile", "ownerprofile"]);
+const allowedProfileTables = new Set(["user_profile", "owner_profile"]);
 
 const assertProfileTable = (profileTable) => {
   if (!allowedProfileTables.has(profileTable)) {
@@ -127,7 +127,14 @@ const profileExists = async (profileTable, authId) => {
   return Boolean(rows[0]);
 };
 
-const ensureProfile = async ({ profileTable, authId, firstname, lastname, phone, pictures }) => {
+const ensureProfile = async ({
+  profileTable,
+  authId,
+  firstname,
+  lastname,
+  phone,
+  pictures,
+}) => {
   if (await profileExists(profileTable, authId)) {
     return;
   }

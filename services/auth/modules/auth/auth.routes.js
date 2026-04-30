@@ -26,6 +26,10 @@ router.post("/register-pemilik/oauth/google", controller.googleOauthOwner);
 
 router.get(
   "/google/user",
+  (req, res, next) => {
+    console.log('Google OAuth - User callback URL:', userConfig.callbackUrl);
+    next();
+  },
   passport.authenticate(userConfig.strategyName, {
     scope: ["profile", "email"],
     session: false,
@@ -34,6 +38,10 @@ router.get(
 
 router.get(
   "/google/pemilik",
+  (req, res, next) => {
+    console.log('Google OAuth - Pemilik callback URL:', ownerConfig.callbackUrl);
+    next();
+  },
   passport.authenticate(ownerConfig.strategyName, {
     scope: ["profile", "email"],
     session: false,
@@ -57,5 +65,23 @@ router.get(
   }),
   controller.googleCallback,
 );
+
+// Debug route to check OAuth config
+router.get("/debug/oauth-config", (req, res) => {
+  res.json({
+    userConfig: {
+      callbackUrl: userConfig.callbackUrl,
+      strategyName: userConfig.strategyName,
+    },
+    ownerConfig: {
+      callbackUrl: ownerConfig.callbackUrl,
+      strategyName: ownerConfig.strategyName,
+    },
+    env: {
+      OAUTH_USER_CALLBACK_URL: process.env.OAUTH_USER_CALLBACK_URL,
+      OAUTH_OWNER_CALLBACK_URL: process.env.OAUTH_OWNER_CALLBACK_URL,
+    }
+  });
+});
 
 module.exports = router;

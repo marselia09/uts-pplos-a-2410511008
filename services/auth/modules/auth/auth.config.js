@@ -1,19 +1,15 @@
 const userConfig = {
-  callbackUrl:
-    process.env.OAUTH_USER_CALLBACK_URL ||
-    "http://localhost:3001/auth/callback/user",
+  callbackUrl: "http://localhost:3001/callback/user",
   label: "user",
-  profileTable: "userprofile",
+  profileTable: "user_profile",
   roleName: "User",
   strategyName: "google-user",
 };
 
 const ownerConfig = {
-  callbackUrl:
-    process.env.OAUTH_OWNER_CALLBACK_URL ||
-    "http://localhost:3001/auth/callback/pemilik",
+  callbackUrl: "http://localhost:3001/callback/pemilik",
   label: "pemilik",
-  profileTable: "ownerprofile",
+  profileTable: "owner_profile",
   roleName: "Pemilik",
   strategyName: "google-owner",
 };

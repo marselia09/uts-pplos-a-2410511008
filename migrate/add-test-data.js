@@ -100,15 +100,15 @@ async function addTestData() {
     // 6. Create Kos entries
     console.log("Creating kos entries...");
     await connection.query(
-      `INSERT INTO kos (name, address, enumGender, pemilikId, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO kos (name, address, gender, pemilikId, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)`,
       ["Kos Melati", "Jl. Melati No. 15, Jakarta Selatan", "MIX", 2, now, now],
     );
     await connection.query(
-      `INSERT INTO kos (name, address, enumGender, pemilikId, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO kos (name, address, gender, pemilikId, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)`,
       ["Kos Mawar", "Jl. Mawar No. 8, Jakarta Barat", "WANITA", 2, now, now],
     );
     await connection.query(
-      `INSERT INTO kos (name, address, enumGender, pemilikId, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO kos (name, address, gender, pemilikId, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)`,
       [
         "Kos Sejuk",
         "Jl. Sejuk Raya No. 22, Jakarta Timur",
@@ -157,10 +157,10 @@ async function addTestData() {
       ["Kamar 003", 500000, 2, "AVAILABLE", 3],
       ["Kamar 004", 500000, 2, "AVAILABLE", 3],
     ];
-    for (const [name, price, capacity, enumStatus, kosId] of rooms) {
+    for (const [name, price, capacity, status, kosId] of rooms) {
       await connection.query(
-        `INSERT INTO room (name, price, capacity, enumStatus, kosId, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [name, price, capacity, enumStatus, kosId, now, now],
+        `INSERT INTO room (name, price, capacity, status, kosId, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [name, price, capacity, status, kosId, now, now],
       );
     }
 

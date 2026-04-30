@@ -9,7 +9,7 @@ function handleOwnerProfileRoutes($path_suffix, $method, $input = []) {
     $page = $_GET['page'] ?? 1;
     $limit = $_GET['limit'] ?? 10;
     
-    if ($path_suffix === '' || $path_suffix === 'ownerprofile') {
+    if ($path_suffix === '' || $path_suffix === 'owner_profile') {
         if ($method === 'GET') {
             $controller->index($page, $limit);
         } elseif ($method === 'POST') {

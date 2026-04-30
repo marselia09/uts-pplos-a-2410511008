@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../../Config/Database.php';
 require_once __DIR__ . '/../../Responses/JsonResponse.php';
 
-class OwnerProfileService {
+class owner_profileService {
     private $pdo;
 
     public function __construct() {
@@ -14,11 +14,11 @@ class OwnerProfileService {
         $offset = ($page - 1) * $limit;
         
         // Get total count
-        $countStmt = $this->pdo->query('SELECT COUNT(*) FROM `ownerprofile`');
+        $countStmt = $this->pdo->query('SELECT COUNT(*) FROM `owner_profile`');
         $total = $countStmt->fetchColumn();
         
         // Get paginated data
-        $stmt = $this->pdo->query("SELECT * FROM `ownerprofile` ORDER BY `id` LIMIT $limit OFFSET $offset");
+        $stmt = $this->pdo->query("SELECT * FROM `owner_profile` ORDER BY `id` LIMIT $limit OFFSET $offset");
         $data = $stmt->fetchAll();
         
         return [
@@ -35,19 +35,19 @@ class OwnerProfileService {
     }
 
     public function getByAuthId($authId) {
-        $stmt = $this->pdo->prepare('SELECT * FROM `ownerprofile` WHERE `authId` = ?');
+        $stmt = $this->pdo->prepare('SELECT * FROM `owner_profile` WHERE `authId` = ?');
         $stmt->execute([$authId]);
         return $stmt->fetch();
     }
 
     public function findById($id) {
-        $stmt = $this->pdo->prepare('SELECT * FROM `ownerprofile` WHERE `id` = ?');
+        $stmt = $this->pdo->prepare('SELECT * FROM `owner_profile` WHERE `id` = ?');
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
 
     public function create($data) {
-        $stmt = $this->pdo->prepare('INSERT INTO `ownerprofile` (`firstname`, `lastname`, `phone`, `pictures`, `authId`) VALUES (?, ?, ?, ?, ?)');
+        $stmt = $this->pdo->prepare('INSERT INTO `owner_profile` (`firstname`, `lastname`, `phone`, `pictures`, `authId`) VALUES (?, ?, ?, ?, ?)');
         $stmt->execute([
             $data['firstname'], 
             $data['lastname'], 
@@ -62,7 +62,7 @@ class OwnerProfileService {
     public function update($id, $data) {
         $existing = $this->findById($id);
         if (!$existing) {
-            throw new Exception('OwnerProfile not found');
+            throw new Exception('owner_profile not found');
         }
         
         $updates = [];
@@ -89,7 +89,7 @@ class OwnerProfileService {
         }
         
         $params[] = $id;
-        $sql = 'UPDATE `ownerprofile` SET ' . implode(', ', $updates) . ', `updatedAt` = CURRENT_TIMESTAMP WHERE `id` = ?';
+        $sql = 'UPDATE `owner_profile` SET ' . implode(', ', $updates) . ', `updatedAt` = CURRENT_TIMESTAMP WHERE `id` = ?';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         
@@ -99,10 +99,10 @@ class OwnerProfileService {
     public function delete($id) {
         $existing = $this->findById($id);
         if (!$existing) {
-            throw new Exception('OwnerProfile not found');
+            throw new Exception('owner_profile not found');
         }
         
-        $stmt = $this->pdo->prepare('DELETE FROM `ownerprofile` WHERE `id` = ?');
+        $stmt = $this->pdo->prepare('DELETE FROM `owner_profile` WHERE `id` = ?');
         $stmt->execute([$id]);
         return true;
     }

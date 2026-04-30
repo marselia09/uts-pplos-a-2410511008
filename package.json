@@ -18,7 +18,7 @@
     "doc": "docs"
   },
  "scripts": {
-   "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node gateway/index.js",
     "start-auth": "node services/auth/index.js",
     "start-user": "cd services/service1-userservice && php -S 0.0.0.0:3002 index.php",
@@ -27,10 +27,12 @@
     "start-auth-dev": "nodemon services/auth/index.js",
     "start-user-dev": "cd services/service1-userservice && nodemon --watch . --ext php --exec \"php -S 0.0.0.0:3002\"",
     "start-kos-dev": "nodemon services/service2-kosservice/index.js",
-    "dev": "concurrently \"npm run start-dev\" \"npm run start-auth-dev\" \"npm run start-user-dev\" \"npm run start-kos-dev\" "
+    "dev": "concurrently \"npm run start-dev\" \"npm run start-auth-dev\" \"npm run start-user-dev\" \"npm run start-kos-dev\" ",
+    "db:migrate": "node migrate/migrate.js",
+    "db:seed": "node migrate/add-test-data.js",
+    "db:reset": "node migrate/migrate.js && node migrate/add-test-data.js"
   },
  "dependencies": {
-    "@prisma/client": "^7.8.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
