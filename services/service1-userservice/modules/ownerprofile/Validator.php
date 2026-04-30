@@ -1,6 +1,6 @@
 <?php
 
-class ProfileUserValidator {
+class OwnerProfileValidator {
     public static function validateStore($data) {
         $errors = [];
         if (empty($data['firstname'] ?? '')) {
@@ -65,3 +65,4 @@ class ProfileUserValidator {
     }
 }
 ?>
+

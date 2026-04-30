@@ -4,13 +4,13 @@ require_once 'Service.php';
 require_once 'Validator.php';
 require_once __DIR__ . '/../../Responses/JsonResponse.php';
 
-class ProfileUserController {
+class OwnerProfileController {
     private $service;
     private $validator;
 
     public function __construct() {
-        $this->service = new ProfileUserService();
-        $this->validator = new ProfileUserValidator();
+        $this->service = new OwnerProfileService();
+        $this->validator = new OwnerProfileValidator();
     }
 
     private function getCurrentUserRole() {
@@ -38,7 +38,7 @@ class ProfileUserController {
     public function index($page = 1, $limit = 10) {
         try {
             $result = $this->service->getAll((int)$page, (int)$limit);
-            JsonResponse::success($result['data'], 'Profile ditemukan', $result['pagination']);
+            JsonResponse::success($result['data'], 'Owner profile ditemukan', $result['pagination']);
         } catch (Exception $e) {
             JsonResponse::error($e->getMessage(), 500);
         }
@@ -48,13 +48,13 @@ class ProfileUserController {
         try {
             $this->validator->validateStore($input);
             if ($this->getCurrentUserRole() !== 'super_admin') {
-                JsonResponse::error('Only super admin can create profiles', 403);
+                JsonResponse::error('Only super admin can create owner profiles', 403);
                 return;
             }
             $input['authId'] = $input['authId'] ?? 0; // From request
             $this->validator->validateAuthId($input['authId']);
             $newProfile = $this->service->create($input);
-            JsonResponse::created($newProfile ?? [], 'Profile berhasil dibuat');
+            JsonResponse::created($newProfile ?? [], 'Owner profile berhasil dibuat');
         } catch (Exception $e) {
             JsonResponse::error($e->getMessage(), 400);
         }
@@ -65,16 +65,16 @@ class ProfileUserController {
             $this->validator->validateId($id);
             $profile = $this->service->findById($id);
             if (!$profile) {
-                JsonResponse::notFound('Profile', $id);
+                JsonResponse::notFound('Owner profile', $id);
                 return;
             }
             
             if (!$this->canAccessProfile($profile, 'read')) {
-                JsonResponse::error('Access denied to this profile', 403);
+                JsonResponse::error('Access denied to this owner profile', 403);
                 return;
             }
             
-            JsonResponse::success($profile, 'Berhasil mengambil data profile');
+            JsonResponse::success($profile, 'Berhasil mengambil data owner profile');
         } catch (Exception $e) {
             JsonResponse::error($e->getMessage(), 400);
         }
@@ -87,17 +87,17 @@ class ProfileUserController {
             
             $profile = $this->service->findById($id);
             if (!$profile) {
-                JsonResponse::notFound('Profile', $id);
+                JsonResponse::notFound('Owner profile', $id);
                 return;
             }
             
             if (!$this->canAccessProfile($profile, 'update')) {
-                JsonResponse::error('Access denied to update this profile', 403);
+                JsonResponse::error('Access denied to update this owner profile', 403);
                 return;
             }
             
             $updated = $this->service->update($id, $input);
-            JsonResponse::updated($updated, 'Profile berhasil diupdate');
+            JsonResponse::updated($updated, 'Owner profile berhasil diupdate');
         } catch (Exception $e) {
             JsonResponse::error($e->getMessage(), 400);
         }
@@ -108,20 +108,21 @@ class ProfileUserController {
             $this->validator->validateId($id);
             $profile = $this->service->findById($id);
             if (!$profile) {
-                JsonResponse::notFound('Profile', $id);
+                JsonResponse::notFound('Owner profile', $id);
                 return;
             }
             
             if ($this->getCurrentUserRole() !== 'super_admin') {
-                JsonResponse::error('Only super admin can delete profiles', 403);
+                JsonResponse::error('Only super admin can delete owner profiles', 403);
                 return;
             }
             
             $this->service->delete($id);
-            JsonResponse::deleted('Profile berhasil dihapus');
+            JsonResponse::deleted('Owner profile berhasil dihapus');
         } catch (Exception $e) {
             JsonResponse::error($e->getMessage(), 400);
         }
     }
 }
 ?>
+

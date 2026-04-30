@@ -2,8 +2,8 @@
 -- DATABASE
 -- mysql -u root -p < schema.sql
 -- =========================================
-CREATE DATABASE IF NOT EXISTS kosansify;
-USE kosansify;
+CREATE DATABASE IF NOT EXISTS sistem_koskosan_db;
+USE sistem_koskosan_db;
 
 -- =========================================
 -- ROLE

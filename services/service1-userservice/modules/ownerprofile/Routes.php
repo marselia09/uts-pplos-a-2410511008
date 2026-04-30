@@ -2,14 +2,14 @@
 
 require_once 'Controller.php';
 
-function handleProfileUserRoutes($path_suffix, $method, $input = []) {
-    $controller = new ProfileUserController();
+function handleOwnerProfileRoutes($path_suffix, $method, $input = []) {
+    $controller = new OwnerProfileController();
     
     // Parse pagination params
     $page = $_GET['page'] ?? 1;
     $limit = $_GET['limit'] ?? 10;
     
-    if ($path_suffix === '' || $path_suffix === 'profile') {
+    if ($path_suffix === '' || $path_suffix === 'ownerprofile') {
         if ($method === 'GET') {
             $controller->index($page, $limit);
         } elseif ($method === 'POST') {
@@ -35,3 +35,4 @@ function handleProfileUserRoutes($path_suffix, $method, $input = []) {
     }
 }
 ?>
+
