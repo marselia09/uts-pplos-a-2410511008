@@ -136,7 +136,21 @@ const register = async (config, payload, session) => {
     },
   });
 
+  await createInitialBalance(user.id);
+
   return authPayload(user, session);
+};
+
+const createInitialBalance = async (userId) => {
+  const { handlequery } = require("../../config/database.js");
+  try {
+    await handlequery(
+      `INSERT INTO balance (userId, balance, createdAt, updatedAt) VALUES (?, 0, CURRENT_TIMESTAMP(3), CURRENT_TIMESTAMP(3))`,
+      [userId],
+    );
+  } catch (error) {
+    console.error("Failed to create initial balance:", error);
+  }
 };
 
 const login = async (config, { email, password }, session) => {
