@@ -238,19 +238,213 @@ Sistem manajemen kos adalah aplikasi berbasis microservice yang mengelola data k
 - MySQL (v8.0+)
 - Composer (for PHP dependencies)
 
-### Installation
+### Installation Steps
 
-1. **Install dependencies**:
+#### Step 1: Clone & Install Dependencies
 
-   ```bash
-   npm install
-   cd services/service1-userservice && composer install
-   ```
+```bash
+# Clone repository
+git clone https://github.com/your-repo/uts-pplos-a-2410511008.git
+cd uts-pplos-a-2410511008
 
-2. **Setup database**:
-   ```bash
-   npm run db:reset
-   ```
+# Install Node.js dependencies
+npm install
+```
+
+```bash
+# Install PHP dependencies
+cd services/service1-userservice
+composer install
+cd ../..
+```
+
+#### Step 2: Setup MySQL Database
+
+Buka terminal/MySQL Workbench, lalu jalankan:
+
+```sql
+CREATE DATABASE sistem_koskosan_db;
+```
+
+#### Step 3: Configure Environment
+
+```bash
+# Copy example environment file
+cp .env.example .env
+```
+
+Edit file `.env` sesuaikan dengan credentials Anda:
+
+```
+DB_CONNECTION=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_DATABASE=sistem_koskosan_db
+DB_USERNAME=root        # sesuaikan
+DB_PASSWORD=             # kosongkan jika tidak ada password
+
+JWT_SECRET=your-secret-key
+```
+
+#### Step 4: Run Database Migration (Buat Tabel)
+
+```bash
+npm run db:migrate
+```
+
+Jika berhasil, output akan menampilkan daftar tabel yang dibuat:
+- auth
+- role
+- userprofile
+- ownerprofile
+- refreshtoken
+- balance
+- facility
+- kos
+- kos_facility
+- room
+- rent
+- payment
+- receipt
+
+#### Step 5: Add Test Data (Optional)
+
+```bash
+npm run db:seed
+```
+
+Ini akan membuat user test:
+| Role | Email | Password |
+|------|-------|----------|
+| Superadmin | superadmin@example.com | password123 |
+| Pemilik | pemilik@test.com | password123 |
+| User | testuser@example.com | password123 |
+
+#### Step 6: Start Services
+
+```bash
+npm run dev
+```
+
+Tunggu hingga semua service running:
+
+```
+[0] API Gateway is running on port 3000
+[1] Service 1 (Auth Service) is running on port 3001
+[2] PHP User Service running at http://0.0.0.0:3002
+[3] Service 2 (Kos Service) is running on port 3003
+```
+
+#### Step 7: Test API
+
+Buka terminal baru, lalu test endpoint:
+
+```bash
+# Test login
+curl -X POST http://localhost:3000/service1/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"superadmin@example.com","password":"password123"}'
+
+# Atau buka di browser
+http://localhost:3000/service3/kos
+```
+
+---
+
+## Jika Terjadi Error
+
+### Port sudah digunakan
+```bash
+# Cari process yang menggunakan port
+lsof -i :3000
+lsof -i :3001
+lsof -i :3002
+lsof -i :3003
+
+# Kill process
+lsof -ti:3000 | xargs kill -9
+```
+
+### Database error
+```bash
+# Pastikan MySQL running
+mysql.server start   # macOS
+sudo systemctl start mysql   # Linux
+```
+
+### Reset database
+```bash
+npm run db:reset
+```
+
+---
+
+## Cara Menggunakan API
+
+### 1. Login untuk mendapatkan Access Token
+
+```bash
+curl -X POST http://localhost:3000/service1/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"superadmin@example.com","password":"password123"}'
+```
+
+Response:
+```json
+{
+  "success": true,
+  "message": "Login berhasil",
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1...",
+    "refreshToken": "eyJhbGciOiJIUzI1...",
+    "user": {...}
+  }
+}
+```
+
+### 2. Menggunakan Access Token
+
+```bash
+# Get all KOS
+curl http://localhost:3000/service3/kos \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+
+# Get my balance
+curl http://localhost:3000/service3/balance/me \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+### 3. Import ke Postman
+
+1. Buka Postman
+2. Import file `postman/POSTMAN_COLLECTION.json`
+3. Buat environment dengan variable:
+   - `base_url`: `http://localhost:3000`
+   - `access_token`: `<token dari login>`
+   - `refresh_token`: `<token dari login>`
+4. Semua request akan otomatis menggunakan token jika sudah login di Postman
+
+---
+
+## Troubleshooting
+
+### Port already in use
+```bash
+# Kill process on port
+lsof -ti:3000 | xargs kill -9
+lsof -ti:3001 | xargs kill -9
+lsof -ti:3002 | xargs kill -9
+lsof -ti:3003 | xargs kill -9
+```
+
+### Database connection error
+- Pastikan MySQL running: `mysql.server start` (macOS) atau `sudo systemctl start mysql` (Linux)
+- Cek credentials di file `.env`
+
+### Clear database and reseed
+```bash
+npm run db:reset
+```
 
 ### Scripts (package.json)
 
