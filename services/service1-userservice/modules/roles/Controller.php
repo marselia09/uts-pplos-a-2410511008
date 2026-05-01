@@ -2,7 +2,8 @@
 
 require_once 'Service.php';
 require_once 'Validator.php';
-require_once __DIR__ . '/../../Responses/JsonResponse.php';
+require_once __DIR__ . '/../../responses/JsonResponse.php';
+require_once __DIR__ . '/../../middlewares/AuthMiddleware.php';
 
 class RolesController {
     private $service;
@@ -15,6 +16,9 @@ class RolesController {
 
     public function index($page = 1, $limit = 10) {
         try {
+            if (!AuthMiddleware::authMiddleware()) {
+                return;
+            }
             $result = $this->service->getAll((int)$page, (int)$limit);
             JsonResponse::success($result['data'], 'Role ditemukan', $result['pagination']);
         } catch (Exception $e) {
@@ -24,6 +28,12 @@ class RolesController {
 
     public function store($input) {
         try {
+            if (!AuthMiddleware::authMiddleware()) {
+                return;
+            }
+            if (!AuthMiddleware::requireSuperadmin()) {
+                return;
+            }
             $this->validator->validateStore($input);
             $newRole = $this->service->create($input);
             JsonResponse::created($newRole ?? [], 'Role berhasil dibuat');
@@ -34,6 +44,9 @@ class RolesController {
 
     public function show($id) {
         try {
+            if (!AuthMiddleware::authMiddleware()) {
+                return;
+            }
             $this->validator->validateId($id);
             $role = $this->service->findById($id);
             if (!$role) {
@@ -47,6 +60,12 @@ class RolesController {
 
     public function update($input, $id) {
         try {
+            if (!AuthMiddleware::authMiddleware()) {
+                return;
+            }
+            if (!AuthMiddleware::requireSuperadmin()) {
+                return;
+            }
             $this->validator->validateId($id);
             $this->validator->validateUpdate($input);
             $updated = $this->service->update($id, $input);
@@ -58,6 +77,12 @@ class RolesController {
 
     public function destroy($id) {
         try {
+            if (!AuthMiddleware::authMiddleware()) {
+                return;
+            }
+            if (!AuthMiddleware::requireSuperadmin()) {
+                return;
+            }
             $this->validator->validateId($id);
             $this->service->delete($id);
             JsonResponse::deleted('Role berhasil dihapus');

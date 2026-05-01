@@ -1,7 +1,7 @@
 const userConfig = {
   callbackUrl: "http://localhost:3001/callback/user",
   label: "user",
-  profileTable: "user_profile",
+  profileTable: "userprofile",
   roleName: "User",
   strategyName: "google-user",
 };
@@ -9,7 +9,7 @@ const userConfig = {
 const ownerConfig = {
   callbackUrl: "http://localhost:3001/callback/pemilik",
   label: "pemilik",
-  profileTable: "owner_profile",
+  profileTable: "ownerprofile",
   roleName: "Pemilik",
   strategyName: "google-owner",
 };

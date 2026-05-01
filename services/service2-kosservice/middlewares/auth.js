@@ -64,4 +64,13 @@ const requireSuperadmin = (req, res, next) => {
 const isSuperadmin = (role) => role === "Superadmin";
 const isPemilik = (role) => role === "Pemilik";
 
-module.exports = { authMiddleware, verifyToken, requireSuperadmin, isSuperadmin, isPemilik };
+const requirePemilik = (req, res, next) => {
+  if (!req.user || req.user.role !== "Pemilik") {
+    const error = new Error("Hanya pemilik yang dapat melakukan aksi ini");
+    error.statusCode = 403;
+    return next(error);
+  }
+  next();
+};
+
+module.exports = { authMiddleware, verifyToken, requireSuperadmin, requirePemilik, isSuperadmin, isPemilik };

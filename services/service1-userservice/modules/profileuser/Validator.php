@@ -3,6 +3,34 @@
 class ProfileUserValidator {
     public static function validateStore($data) {
         $errors = [];
+        
+        $hasAuthData = !empty($data['username']) && !empty($data['email']) && !empty($data['password']);
+        $hasAuthId = !empty($data['authId']);
+        
+        if (!$hasAuthData && !$hasAuthId) {
+            $errors[] = 'Field username, email, password atau authId wajib diisi';
+        }
+        
+        if ($hasAuthData) {
+            if (strlen($data['username'] ?? '') > 50) {
+                $errors[] = 'Username tidak boleh lebih dari 50 karakter';
+            }
+            
+            if (!filter_var($data['email'] ?? '', FILTER_VALIDATE_EMAIL)) {
+                $errors[] = 'Format email tidak valid';
+            }
+            
+            if (strlen($data['password'] ?? '') < 6) {
+                $errors[] = 'Password minimal 6 karakter';
+            }
+        }
+        
+        if ($hasAuthId) {
+            if (!is_numeric($data['authId']) || $data['authId'] <= 0) {
+                $errors[] = 'authId harus berupa angka positif';
+            }
+        }
+        
         if (empty($data['firstname'] ?? '')) {
             $errors[] = 'Field firstname wajib diisi';
         }

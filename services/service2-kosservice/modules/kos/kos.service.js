@@ -32,7 +32,8 @@ const findKosById = async (id) => {
   if (!kos) {
     throw createError(`${config.label} dengan ID ${id} tidak ditemukan`, 404);
   }
-  return kos;
+  const facilities = await repository.getKosFacilities(id);
+  return { ...kos, facilities };
 };
 
 const createKos = async (payload, pemilikId) => {

@@ -6,11 +6,15 @@
 
 ---
 
+## Demo Video
+
+## Silakanonton video demo sistem di: [YouTube Demo Video](https://youtube.com/watch?v=EXAMPLE_LINK)
+
+---
+
 ## Overview
 
 Sistem manajemen kos adalah aplikasi berbasis microservice yang mengelola data kos, kamar, penyewaan, dan pembayaran. Terdiri dari 3 service yang berkomunikasi melalui API Gateway.
-
-**Video Demo**: [https://youtu.be/example](https://youtu.be/example)
 
 ---
 
@@ -22,176 +26,193 @@ Sistem manajemen kos adalah aplikasi berbasis microservice yang mengelola data k
 └─────────────┘     │   (3000)    │
                     └──────┬──────┘
                            │
-        ┌──────────────────┼──────────────────┐
-        ▼                  ▼                  ▼
+    ┌──────────────────────┼──────────────────────┐
+    │                      │                      │
+    ▼                      ▼                      ▼
 ┌───────────────┐   ┌───────────────┐   ┌───────────────┐
-│   Service 1   │   │   Service 2   │   │   Service 3   │
-│     Auth      │   │     User      │   │      Kos      │
-│  (Node.js)    │   │    (PHP)      │   │  (Node.js)    │
-│   Port 3001   │   │   Port 3003   │   │   Port 3002   │
+│   /service1   │   │   /service2   │   │   /service3   │
+│  Auth Service │   │  User Service │   │   Kos Service │
+│   (Node.js)   │   │     (PHP)     │   │   (Node.js)   │
+│   Port 3001   │   │   Port 3002   │   │   Port 3003   │
 └───────────────┘   └───────────────┘   └───────────────┘
 ```
 
----
+### Access Through Gateway
 
-## Mengapa Dipisah Menjadi 3 Services?
-
-Sistem ini menggunakan arsitektur **Microservices** dengan pemisahan berdasarkan tanggung jawab bisnis (*business domain*) yang berbeda:
-
-### 1. Service Separation by Domain
-
-| Service | Domain | Responsibilities |
-|---------|--------|------------------|
-| **Auth Service** | Authentication & Authorization | Login, register, JWT token management, role verification |
-| **User Service** | User & Profile Management | User profiles, owner profiles, role management |
-| **Kos Service** | Business Logic | Kos, rooms, rentals, payments, balances |
-
-### 2. Technology Diversity
-
-Setiap service menggunakan teknologi yang berbeda sesuai kebutuhan:
-
-- **Auth & Kos Services**: Node.js + Express.js (menggunakan JWT, async operations)
-- **User Service**: PHP (menunjukkan kemampuan multi-language microservices)
-
-### 3. Benefits
-
-| Benefit | Description |
-|---------|-------------|
-| **Scalability** | Setiap service bisa di-scale secara independen |
-| **Maintainability** | Setiap tim bisa mengerjakan service berbeda tanpa konflik |
-| **Fault Isolation** | Error di satu service tidak mempengaruhi service lain |
-| **Technology Flexibility** |Setiap service bisa menggunakan teknologi berbeda sesuai kebutuhan |
-| **Deployment Independence** | Setiap service bisa di-deploy secara terpisah |
+| Service      | Gateway Path  | Direct Port | Description              |
+| ------------ | ------------- | ----------- | ------------------------ |
+| Auth Service | `/service1/*` | 3001        | Authentication & JWT     |
+| User Service | `/service2/*` | 3002        | User profiles (PHP)      |
+| Kos Service  | `/service3/*` | 3003        | Business logic (Node.js) |
 
 ---
 
-## Services
+## Default Test Data (After Seeding)
 
-### Service 1: Auth Service (Port 3001)
-**Tech Stack**: Node.js + Express.js  
-**Path**: `services/auth/`
+| Role           | Email                  | Password    | Balance        |
+| -------------- | ---------------------- | ----------- | -------------- |
+| Superadmin     | superadmin@example.com | password123 | Rp 100,000,000 |
+| Pemilik        | pemilik@test.com       | password123 | Rp 50,000,000  |
+| User (Penyewa) | testuser@example.com   | password123 | Rp 50,000,000  |
 
-Authentication dan Authorization service menggunakan JWT.
+**Kos Available:**
 
-**Endpoints:**
+- Kos Melati (Jakarta Selatan, MIX)
+- Kos Mawar (Jakarta Barat, WANITA)
+- Kos Sejuk (Jakarta Timur, PRIA)
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/register-user` | Register user baru | ❌ |
-| POST | `/register-pemilik` | Register pemilik kos | ❌ |
-| POST | `/login` | Login user | ❌ |
-| POST | `/refresh` | Refresh access token | ❌ |
-| POST | `/logout` | Logout user | ❌ |
-| POST | `/logout-all` | Logout semua device | ✅ |
-| GET | `/me` | Get current user | ✅ |
-| POST | `/register-user/oauth/google` | Register via Google (User) | ❌ |
-| POST | `/register-pemilik/oauth/google` | Register via Google (Pemilik) | ❌ |
-
-**Default Users (after seeding):**
-- Superadmin: `superadmin@example.com` / `password123`
-- Pemilik: `pemilik@test.com` / `password123`
-- User: `testuser@example.com` / `password123`
+**Rooms:** 13 rooms with prices Rp 400,000 - Rp 900,000
 
 ---
 
-### Service 2: User Service (Port 3003)
-**Tech Stack**: PHP  
-**Path**: `services/service1-userservice/`
+## API Endpoints
 
-Manages user profiles dan owner profiles.
+### 1. AUTH SERVICE (Gateway: `/service1`)
 
-**Endpoints - Roles Module (`/api/role`):**
+#### Authentication - Email/Password
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | List all roles |
-| POST | `/` | Create new role |
-| GET | `/:id` | Get role by ID |
-| PUT | `/:id` | Update role |
-| DELETE | `/:id` | Delete role |
+| Method | Endpoint                     | Description                  | Auth |
+| ------ | ---------------------------- | ---------------------------- | ---- |
+| POST   | `/service1/register-user`    | Register user baru (Penyewa) | ❌   |
+| POST   | `/service1/register-pemilik` | Register pemilik kos         | ❌   |
+| POST   | `/service1/login`            | Login user                   | ❌   |
+| POST   | `/service1/refresh`          | Refresh access token         | ❌   |
+| POST   | `/service1/logout`           | Logout user                  | ❌   |
+| POST   | `/service1/logout-all`       | Logout semua device          | ✅   |
+| GET    | `/service1/me`               | Get current user             | ✅   |
 
-**Endpoints - User Profile Module (`/api/profile`):**
+#### Authentication - Google OAuth
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | List all user profiles |
-| POST | `/` | Create new user profile |
-| GET | `/:id` | Get user profile by ID |
-| PUT | `/:id` | Update user profile |
-| DELETE | `/:id` | Delete user profile |
-
-**Endpoints - Owner Profile Module (`/api/ownerprofile`):**
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | List all owner profiles |
-| POST | `/` | Create new owner profile |
-| GET | `/:id` | Get owner profile by ID |
-| PUT | `/:id` | Update owner profile |
-| DELETE | `/:id` | Delete owner profile |
+| Method | Endpoint                                  | Description                          | Auth |
+| ------ | ----------------------------------------- | ------------------------------------ | ---- |
+| GET    | `/service1/google/user`                   | Get Google OAuth URL (User/Penyewa)  | ❌   |
+| GET    | `/service1/google/pemilik`                | Get Google OAuth URL (Pemilik)       | ❌   |
+| GET    | `/service1/callback/user`                 | OAuth callback (User)                | ❌   |
+| GET    | `/service1/callback/pemilik`              | OAuth callback (Pemilik)             | ❌   |
+| POST   | `/service1/register-user/oauth/google`    | Register user via Google ID Token    | ❌   |
+| POST   | `/service1/register-pemilik/oauth/google` | Register pemilik via Google ID Token | ❌   |
 
 ---
 
-### Service 3: Kos Service (Port 3002)
-**Tech Stack**: Node.js + Express.js  
-**Path**: `services/service2-kosservice/`
+### 2. USER SERVICE (Gateway: `/service2/api`)
 
-Manages kos, rooms, balances, rents, dan payments.
+#### Roles Module (`/role`)
 
-**Endpoints - Kos Module (`/kos`):**
+| Method | Endpoint                 | Description                         | Auth |
+| ------ | ------------------------ | ----------------------------------- | ---- |
+| GET    | `/service2/api/role`     | List all roles (with pagination)    | ✅   |
+| POST   | `/service2/api/role`     | Create new role (name, description) | ✅   |
+| GET    | `/service2/api/role/:id` | Get role by ID                      | ✅   |
+| PUT    | `/service2/api/role/:id` | Update role (name, description)     | ✅   |
+| DELETE | `/service2/api/role/:id` | Delete role                         | ✅   |
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/` | List all kos | ❌ |
-| GET | `/my` | List kos milik sendiri | ✅ |
-| GET | `/:id` | Get kos by ID | ❌ |
-| POST | `/` | Create new kos | ✅ |
-| PUT | `/:id` | Update kos | ✅ |
-| DELETE | `/:id` | Delete kos | ✅ |
+#### User Profile Module (`/profile`)
 
-**Endpoints - Room Module (`/room`):**
+| Method | Endpoint                    | Description                                                        | Auth |
+| ------ | --------------------------- | ------------------------------------------------------------------ | ---- |
+| GET    | `/service2/api/profile`     | List all user profiles (with pagination)                           | ✅   |
+| POST   | `/service2/api/profile`     | Create user profile (firstname, lastname, authId, phone, pictures) | ✅   |
+| GET    | `/service2/api/profile/:id` | Get user profile by ID                                             | ✅   |
+| PUT    | `/service2/api/profile/:id` | Update user profile (firstname, lastname, phone, pictures)         | ✅   |
+| DELETE | `/service2/api/profile/:id` | Delete user profile                                                | ✅   |
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/` | List all rooms | ❌ |
-| GET | `/:id` | Get room by ID | ❌ |
-| POST | `/` | Create new room | ✅ |
-| PUT | `/:id` | Update room | ✅ |
-| DELETE | `/:id` | Delete room | ✅ |
+**Profile User Fields:**
 
-**Endpoints - Balance Module (`/balance`):**
+- `firstname`: Nama depan (required)
+- `lastname`: Nama belakang (required)
+- `authId`: ID user dari tabel auth (required)
+- `phone`: Nomor telepon (optional)
+- `pictures`: URL gambar/avatar (optional)
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/` | List all balances | ✅ |
-| GET | `/me` | Get my balance | ✅ |
-| GET | `/user/:userId` | Get balance by user ID | ✅ |
-| PUT | `/user/:userId` | Update user balance | ✅ |
+#### Owner Profile Module (`/ownerprofile`)
 
-**Endpoints - Rent Module (`/rent`):**
+| Method | Endpoint                         | Description                                                         | Auth |
+| ------ | -------------------------------- | ------------------------------------------------------------------- | ---- |
+| GET    | `/service2/api/ownerprofile`     | List all owner profiles (with pagination)                           | ✅   |
+| POST   | `/service2/api/ownerprofile`     | Create owner profile (firstname, lastname, authId, phone, pictures) | ✅   |
+| GET    | `/service2/api/ownerprofile/:id` | Get owner profile by ID                                             | ✅   |
+| PUT    | `/service2/api/ownerprofile/:id` | Update owner profile (firstname, lastname, phone, pictures)         | ✅   |
+| DELETE | `/service2/api/ownerprofile/:id` | Delete owner profile                                                | ✅   |
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/my` | Get my rentals | ✅ |
-| GET | `/:id` | Get rent by ID | ✅ |
-| POST | `/` | Create new rent | ✅ |
-| PUT | `/:id/cancel` | Cancel rent | ✅ |
-| PUT | `/:id/complete` | Complete rent | ✅ |
+**Owner Profile Fields:**
 
-**Endpoints - Payment Module (`/payment`):**
+- `firstname`: Nama depan (required)
+- `lastname`: Nama belakang (required)
+- `authId`: ID user dari tabel auth (required)
+- `phone`: Nomor telepon (optional)
+- `pictures`: URL gambar/avatar (optional)
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/my` | Get my payments | ✅ |
-| GET | `/:id` | Get payment by ID | ✅ |
-| POST | `/` | Create new payment | ✅ |
-| PUT | `/:id/pay` | Process payment | ✅ |
+---
+
+### 3. KOS SERVICE (Gateway: `/service3`)
+
+#### Kos Module (`/kos`)
+
+| Method | Endpoint            | Description                    | Auth            |
+| ------ | ------------------- | ------------------------------ | --------------- |
+| GET    | `/service3/kos`     | List all kos (with pagination) | ❌              |
+| GET    | `/service3/kos/my`  | List kos milik sendiri         | ✅              |
+| GET    | `/service3/kos/:id` | Get kos by ID                  | ❌              |
+| POST   | `/service3/kos`     | Create new kos                 | ✅ (Pemilik)    |
+| PUT    | `/service3/kos/:id` | Update kos                     | ✅ (Pemilik)    |
+| DELETE | `/service3/kos/:id` | Delete kos                     | ✅ (Superadmin) |
+
+#### Room Module (`/room`)
+
+| Method | Endpoint             | Description                      | Auth         |
+| ------ | -------------------- | -------------------------------- | ------------ |
+| GET    | `/service3/room`     | List all rooms (with pagination) | ❌           |
+| GET    | `/service3/room/:id` | Get room by ID                   | ❌           |
+| POST   | `/service3/room`     | Create new room                  | ✅ (Pemilik) |
+| PUT    | `/service3/room/:id` | Update room                      | ✅ (Pemilik) |
+| DELETE | `/service3/room/:id` | Delete room                      | ✅ (Pemilik) |
+
+#### Balance Module (`/balance`)
+
+| Method | Endpoint                         | Description                    | Auth            |
+| ------ | -------------------------------- | ------------------------------ | --------------- |
+| GET    | `/service3/balance`              | List all balances (Superadmin) | ✅              |
+| GET    | `/service3/balance/me`           | Get my balance                 | ✅              |
+| GET    | `/service3/balance/user/:userId` | Get balance by user ID         | ✅              |
+| PUT    | `/service3/balance/user/:userId` | Update user balance            | ✅ (Superadmin) |
+
+#### Rent Module (`/rent`)
+
+| Method | Endpoint                      | Description     | Auth            |
+| ------ | ----------------------------- | --------------- | --------------- |
+| GET    | `/service3/rent/my`           | Get my rentals  | ✅              |
+| GET    | `/service3/rent/:id`          | Get rent by ID  | ✅              |
+| POST   | `/service3/rent`              | Create new rent | ✅              |
+| PUT    | `/service3/rent/:id/cancel`   | Cancel rent     | ✅              |
+| PUT    | `/service3/rent/:id/complete` | Complete rent   | ✅ (Superadmin) |
+
+#### Payment Module (`/payment`)
+
+| Method | Endpoint                    | Description        | Auth |
+| ------ | --------------------------- | ------------------ | ---- |
+| GET    | `/service3/payment/my`      | Get my payments    | ✅   |
+| GET    | `/service3/payment/:id`     | Get payment by ID  | ✅   |
+| POST   | `/service3/payment`         | Create new payment | ✅   |
+| PUT    | `/service3/payment/:id/pay` | Process payment    | ✅   |
+
+#### Receipt Module (`/receipt`)
+
+| Method | Endpoint                         | Description                         | Auth            |
+| ------ | -------------------------------- | ----------------------------------- | --------------- |
+| GET    | `/service3/receipt`              | List all receipts (with pagination) | ✅              |
+| GET    | `/service3/receipt/my`           | Get my receipts                     | ✅              |
+| GET    | `/service3/receipt/user/:userId` | Get receipts by user ID             | ✅ (Superadmin) |
+| GET    | `/service3/receipt/:id`          | Get receipt by ID                   | ✅              |
+| POST   | `/service3/receipt`              | Create new receipt                  | ✅ (Superadmin) |
+| PUT    | `/service3/receipt/:id`          | Update receipt                      | ✅ (Superadmin) |
+| DELETE | `/service3/receipt/:id`          | Delete receipt                      | ✅ (Superadmin) |
 
 ---
 
 ## Database Schema
 
 ### Tables:
+
 - `role` - User roles (Superadmin, Pemilik, User)
 - `auth` - User authentication data
 - `userprofile` - User profile information
@@ -211,6 +232,7 @@ Manages kos, rooms, balances, rents, dan payments.
 ## Setup
 
 ### Prerequisites
+
 - Node.js (v14+)
 - PHP (v8.0+)
 - MySQL (v8.0+)
@@ -219,6 +241,7 @@ Manages kos, rooms, balances, rents, dan payments.
 ### Installation
 
 1. **Install dependencies**:
+
    ```bash
    npm install
    cd services/service1-userservice && composer install
@@ -231,70 +254,48 @@ Manages kos, rooms, balances, rents, dan payments.
 
 ### Scripts (package.json)
 
-| Script | Description |
-|--------|-------------|
-| `npm start` | Start API Gateway (port 3000) |
-| `npm run start-auth` | Start Auth Service (port 3001) |
-| `npm run start-user` | Start User Service (port 3003) |
-| `npm run start-kos` | Start Kos Service (port 3002) |
-| `npm run dev` | Start all services concurrently |
-| `npm run start-dev` | Start gateway with nodemon |
-| `npm run start-auth-dev` | Start auth with nodemon |
-| `npm run start-user-dev` | Start user service with nodemon |
-| `npm run start-kos-dev` | Start kos service with nodemon |
-| `npm run db:migrate` | Run database migrations |
-| `npm run db:seed` | Add test data to database |
-| `npm run db:reset` | Reset database (migrate + seed) |
-
-### Running Services
-
-**Option 1: Start all services:**
-```bash
-npm run dev
-```
-
-**Option 2: Start individually:**
-```bash
-npm run start-auth    # Port 3001
-npm run start-kos     # Port 3002
-npm run start-user    # Port 3003
-npm start             # Gateway - Port 3000
-```
+| Script               | Description                     |
+| -------------------- | ------------------------------- |
+| `npm start`          | Start API Gateway (port 3000)   |
+| `npm run start-auth` | Start Auth Service (port 3001)  |
+| `npm run start-user` | Start User Service (port 3002)  |
+| `npm run start-kos`  | Start Kos Service (port 3003)   |
+| `npm run dev`        | Start all services concurrently |
+| `npm run db:migrate` | Run database migrations         |
+| `npm run db:seed`    | Add test data to database       |
+| `npm run db:reset`   | Reset database (migrate + seed) |
 
 ### Default Ports
+
 - Gateway: 3000
 - Auth Service: 3001
-- Kos Service: 3002
-- User Service: 3003
+- User Service (PHP): 3002
+- Kos Service: 3003
 
 ---
 
 ## API Usage Example
 
-### Login
+### Login (through gateway)
+
 ```bash
-curl -X POST http://localhost:3001/login \
+curl -X POST http://localhost:3000/service1/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"pemilik@test.com","password":"password123"}'
+  -d '{"email":"superadmin@example.com","password":"password123"}'
 ```
 
 ### Get My Kos (with token)
+
 ```bash
-curl http://localhost:3002/kos/my \
+curl http://localhost:3000/service3/kos/my \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
-### Create New Kos
-```bash
-curl -X POST http://localhost:3002/kos \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Kos Baru","address":"Jl. Baru No.1","gender":"PRIA"}'
-```
-
 ### Get User Profiles (PHP Service)
+
 ```bash
-curl http://localhost:3003/api/profile
+curl http://localhost:3000/service2/api/profile \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
 ---
@@ -303,5 +304,21 @@ curl http://localhost:3003/api/profile
 
 - **Backend**: Node.js, Express.js, PHP
 - **Database**: MySQL
-- **Authentication**: JWT (JSON Web Token)
+- **Authentication**: JWT (JSON Web Token), Google OAuth
 - **Architecture**: REST API Microservices
+- **API Gateway**: http-proxy-middleware
+
+---
+
+## Postman Collection
+
+Import file `POSTMAN_COLLECTION.json` ke Postman untuk testing lengkap semua endpoint.
+
+**Collection Structure:**
+
+1. **Auth Service** - Email/Password & Google OAuth authentication
+2. **User Service** - CRUD Profile User, Owner Profile, Roles
+3. **Kos Service** - CRUD Kos, Room, Balance, Rent, Payment, Receipt
+4. **Demo Admin Flow** - Complete admin operations (Email/Password)
+5. **Demo User Order Flow** - Complete user booking flow (Email/Password)
+6. **Demo Google OAuth Flow** - OAuth login & register demonstration

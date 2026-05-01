@@ -37,18 +37,22 @@ const assertId = (idVal, name = "ID") => {
 
 const validateCreateKos = (body) => {
   const name = assertString(body.name, "Nama", nameMaxLen);
-  const address = assertString(body.address, "Alamat", addrMaxLen);
-  const gender = assertGender(body.gender);
+  const address = assertString(body.alamat || body.address, "Alamat", addrMaxLen);
+  const data = { name, address };
+  
+  if (body.gender !== undefined) {
+    data.gender = assertGender(body.gender);
+  }
 
-  return { name, address, gender };
+  return data;
 };
 
 const validateUpdateKos = (body) => {
   const data = {};
   if (body.name !== undefined)
     data.name = assertString(body.name, "Nama", nameMaxLen);
-  if (body.address !== undefined)
-    data.address = assertString(body.address, "Alamat", addrMaxLen);
+  if (body.alamat !== undefined || body.address !== undefined)
+    data.address = assertString(body.alamat || body.address, "Alamat", addrMaxLen);
   if (body.gender !== undefined) data.gender = assertGender(body.gender);
 
   if (Object.keys(data).length === 0) {

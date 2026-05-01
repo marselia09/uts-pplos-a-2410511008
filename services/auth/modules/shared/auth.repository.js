@@ -1,6 +1,6 @@
 const { handlequery, pool } = require("../../config/database.js");
 
-const allowedProfileTables = new Set(["user_profile", "owner_profile"]);
+const allowedProfileTables = new Set(["userprofile", "ownerprofile"]);
 
 const assertProfileTable = (profileTable) => {
   if (!allowedProfileTables.has(profileTable)) {

@@ -1,9 +1,9 @@
 <?php
 
-require_once __DIR__ . '/../../Config/Database.php';
-require_once __DIR__ . '/../../Responses/JsonResponse.php';
+require_once __DIR__ . '/../../config/Database.php';
+require_once __DIR__ . '/../../responses/JsonResponse.php';
 
-class owner_profileService {
+class ownerprofileService {
     private $pdo;
 
     public function __construct() {
@@ -14,11 +14,11 @@ class owner_profileService {
         $offset = ($page - 1) * $limit;
         
         // Get total count
-        $countStmt = $this->pdo->query('SELECT COUNT(*) FROM `owner_profile`');
+        $countStmt = $this->pdo->query('SELECT COUNT(*) FROM `ownerprofile`');
         $total = $countStmt->fetchColumn();
         
         // Get paginated data
-        $stmt = $this->pdo->query("SELECT * FROM `owner_profile` ORDER BY `id` LIMIT $limit OFFSET $offset");
+        $stmt = $this->pdo->query("SELECT * FROM `ownerprofile` ORDER BY `id` LIMIT $limit OFFSET $offset");
         $data = $stmt->fetchAll();
         
         return [
@@ -35,19 +35,19 @@ class owner_profileService {
     }
 
     public function getByAuthId($authId) {
-        $stmt = $this->pdo->prepare('SELECT * FROM `owner_profile` WHERE `authId` = ?');
+        $stmt = $this->pdo->prepare('SELECT * FROM `ownerprofile` WHERE `authId` = ?');
         $stmt->execute([$authId]);
         return $stmt->fetch();
     }
 
     public function findById($id) {
-        $stmt = $this->pdo->prepare('SELECT * FROM `owner_profile` WHERE `id` = ?');
+        $stmt = $this->pdo->prepare('SELECT * FROM `ownerprofile` WHERE `id` = ?');
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
 
     public function create($data) {
-        $stmt = $this->pdo->prepare('INSERT INTO `owner_profile` (`firstname`, `lastname`, `phone`, `pictures`, `authId`) VALUES (?, ?, ?, ?, ?)');
+        $stmt = $this->pdo->prepare('INSERT INTO `ownerprofile` (`firstname`, `lastname`, `phone`, `pictures`, `authId`) VALUES (?, ?, ?, ?, ?)');
         $stmt->execute([
             $data['firstname'], 
             $data['lastname'], 
@@ -59,10 +59,45 @@ class owner_profileService {
         return $this->findById($newId);
     }
 
+    public function createWithAuth($data) {
+        $this->pdo->beginTransaction();
+        
+        try {
+            $hashedPassword = password_hash($data['password'], PASSWORD_BCRYPT);
+            $roleId = 2;
+            
+            $stmt = $this->pdo->prepare('INSERT INTO `auth` (`username`, `email`, `password`, `roleId`) VALUES (?, ?, ?, ?)');
+            $stmt->execute([
+                $data['username'],
+                $data['email'],
+                $hashedPassword,
+                $roleId
+            ]);
+            $authId = $this->pdo->lastInsertId();
+            
+            $stmt = $this->pdo->prepare('INSERT INTO `ownerprofile` (`firstname`, `lastname`, `phone`, `pictures`, `authId`) VALUES (?, ?, ?, ?, ?)');
+            $stmt->execute([
+                $data['firstname'],
+                $data['lastname'],
+                $data['phone'] ?? null,
+                $data['pictures'] ?? null,
+                $authId
+            ]);
+            $profileId = $this->pdo->lastInsertId();
+            
+            $this->pdo->commit();
+            
+            return $this->findById($profileId);
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
+    }
+
     public function update($id, $data) {
         $existing = $this->findById($id);
         if (!$existing) {
-            throw new Exception('owner_profile not found');
+            throw new Exception('ownerprofile not found');
         }
         
         $updates = [];
@@ -89,7 +124,7 @@ class owner_profileService {
         }
         
         $params[] = $id;
-        $sql = 'UPDATE `owner_profile` SET ' . implode(', ', $updates) . ', `updatedAt` = CURRENT_TIMESTAMP WHERE `id` = ?';
+        $sql = 'UPDATE `ownerprofile` SET ' . implode(', ', $updates) . ', `updatedAt` = CURRENT_TIMESTAMP WHERE `id` = ?';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         
@@ -99,10 +134,10 @@ class owner_profileService {
     public function delete($id) {
         $existing = $this->findById($id);
         if (!$existing) {
-            throw new Exception('owner_profile not found');
+            throw new Exception('ownerprofile not found');
         }
         
-        $stmt = $this->pdo->prepare('DELETE FROM `owner_profile` WHERE `id` = ?');
+        $stmt = $this->pdo->prepare('DELETE FROM `ownerprofile` WHERE `id` = ?');
         $stmt->execute([$id]);
         return true;
     }

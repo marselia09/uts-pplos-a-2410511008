@@ -1,0 +1,1694 @@
+{
+  "info": {
+    "name": "KOS Management API - Full Collection",
+    "description": "Complete API Collection for KOS Management System with Gateway\n\n## Architecture\n```\n[Client] -> [Gateway :3000]\n             /service1 -> [Auth Service :3001]\n             /service2 -> [User Service PHP :3002]\n             /service3 -> [Kos Service :3003]\n```\n\n## Base URL\nConfigure `{{base_url}}` in your environment (e.g., http://localhost:3000)\n\n## Default Test Data (After Seeding)\n| Role | Email | Password | Balance |\n|------|-------|----------|---------|\n| Superadmin | superadmin@example.com | password123 | Rp 100,000,000 |\n| Pemilik | pemilik@test.com | password123 | Rp 50,000,000 |\n| User (Penyewa) | testuser@example.com | password123 | Rp 50,000,000 |\n\n**Kos Available:**\n- Kos Melati (Jakarta Selatan, MIX)\n- Kos Mawar (Jakarta Barat, WANITA)\n- Kos Sejuk (Jakarta Timur, PRIA)\n\n**Rooms:** 13 rooms with prices Rp 400,000 - Rp 900,000",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "1. AUTH SERVICE (Gateway: /service1)",
+      "item": [
+        {
+          "name": "1.1 Authentication - Email/Password",
+          "item": [
+            {
+              "name": "Register User (Penyewa)",
+              "description": "Mendaftarkan user baru dengan role Penyewa menggunakan email/password.\n\n**Endpoint:** POST {{base_url}}/service1/register-user\n\n**Body:**\n```json\n{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\",\n    \"username\": \"johndoe\",\n    \"fullName\": \"John Doe\",\n    \"phone\": \"081234567890\"\n}\n```",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service1/register-user",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\",\n    \"username\": \"johndoe\",\n    \"fullName\": \"John Doe\",\n    \"phone\": \"081234567890\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const response = pm.response.json();",
+                      "if (response.data && response.data.accessToken) {",
+                      "    pm.environment.set('access_token', response.data.accessToken);",
+                      "}",
+                      "if (response.data && response.data.refreshToken) {",
+                      "    pm.environment.set('refresh_token', response.data.refreshToken);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "response": []
+            },
+            {
+              "name": "Register Pemilik (Owner)",
+              "description": "Mendaftarkan user baru dengan role Pemilik menggunakan email/password.\n\n**Endpoint:** POST {{base_url}}/service1/register-pemilik\n\n**Body:**\n```json\n{\n    \"email\": \"owner@example.com\",\n    \"password\": \"password123\",\n    \"username\": \"owner1\",\n    \"fullName\": \"Owner Satu\",\n    \"phone\": \"081234567891\"\n}\n```",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service1/register-pemilik",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"owner@example.com\",\n    \"password\": \"password123\",\n    \"username\": \"owner1\",\n    \"fullName\": \"Owner Satu\",\n    \"phone\": \"081234567891\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const response = pm.response.json();",
+                      "if (response.data && response.data.accessToken) {",
+                      "    pm.environment.set('access_token', response.data.accessToken);",
+                      "}",
+                      "if (response.data && response.data.refreshToken) {",
+                      "    pm.environment.set('refresh_token', response.data.refreshToken);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "response": []
+            },
+            {
+              "name": "Login - Email/Password",
+              "description": "Login dengan email dan password. Returns access_token dan refresh_token.\n\n**Endpoint:** POST {{base_url}}/service1/login\n\n**Body:**\n```json\n{\n    \"email\": \"superadmin@example.com\",\n    \"password\": \"password123\"\n}\n```\n\n**Test Data:**\n- Superadmin: superadmin@example.com / password123\n- Pemilik: pemilik@test.com / password123\n- User: testuser@example.com / password123",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service1/login",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"superadmin@example.com\",\n    \"password\": \"password123\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const response = pm.response.json();",
+                      "if (response.data && response.data.accessToken) {",
+                      "    pm.environment.set('access_token', response.data.accessToken);",
+                      "}",
+                      "if (response.data && response.data.refreshToken) {",
+                      "    pm.environment.set('refresh_token', response.data.refreshToken);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "response": []
+            },
+            {
+              "name": "Refresh Token",
+              "description": "Gunakan refresh_token untuk mendapatkan access_token baru.\n\n**Endpoint:** POST {{base_url}}/service1/refresh\n\n**Body:**\n```json\n{\n    \"refresh_token\": \"{{refresh_token}}\"\n}\n```",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service1/refresh",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const response = pm.response.json();",
+                      "if (response.data && response.data.accessToken) {",
+                      "    pm.environment.set('access_token', response.data.accessToken);",
+                      "}",
+                      "if (response.data && response.data.refreshToken) {",
+                      "    pm.environment.set('refresh_token', response.data.refreshToken);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "response": []
+            },
+            {
+              "name": "Logout",
+              "description": "Logout dan invalidasi token.\n\n**Endpoint:** POST {{base_url}}/service1/logout",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service1/logout",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Logout All Devices",
+              "description": "Logout dari semua device.\n\n**Endpoint:** POST {{base_url}}/service1/logout-all\n\n**Auth:** Required (Bearer token)",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service1/logout-all",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Get Current User (Me)",
+              "description": "Mendapatkan informasi user yang sedang login.\n\n**Endpoint:** GET {{base_url}}/service1/me\n\n**Auth:** Required",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service1/me",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  }
+                ]
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "1.2 Authentication - Google OAuth",
+          "description": "Login dan Register menggunakan Google OAuth",
+          "item": [
+            {
+              "name": "Google OAuth - Login User (Penyewa)",
+              "description": "Mendapatkan URL untuk login Google sebagai User/Penyewa.\nBuka URL hasil di browser, lalu akan di-redirect ke callback dengan token.\n\n**Endpoint:** GET {{base_url}}/service1/google/user\n\n**Catatan:** Response akan berupa redirect ke Google. Dari browser akan diarahkan ke callback dengan token di URL.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service1/google/user"
+              },
+              "response": []
+            },
+            {
+              "name": "Google OAuth - Login Pemilik",
+              "description": "Mendapatkan URL untuk login Google sebagai Pemilik.\n\n**Endpoint:** GET {{base_url}}/service1/google/pemilik",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service1/google/pemilik"
+              },
+              "response": []
+            },
+            {
+              "name": "Google OAuth - Register User (Penyewa)",
+              "description": "Register user baru via Google OAuth.\n\n**Endpoint:** POST {{base_url}}/service1/register-user/oauth/google\n\n**Body:**\n```json\n{\n    \"idToken\": \"[Google ID Token]\"\n}\n```\n\n**Catatan:** Gunakan Google ID Token dari Google Sign-In.",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service1/register-user/oauth/google",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"idToken\": \"[Google ID Token]\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const response = pm.response.json();",
+                      "if (response.data && response.data.accessToken) {",
+                      "    pm.environment.set('access_token', response.data.accessToken);",
+                      "}",
+                      "if (response.data && response.data.refreshToken) {",
+                      "    pm.environment.set('refresh_token', response.data.refreshToken);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "response": []
+            },
+            {
+              "name": "Google OAuth - Register Pemilik",
+              "description": "Register pemilik baru via Google OAuth.\n\n**Endpoint:** POST {{base_url}}/service1/register-pemilik/oauth/google\n\n**Body:**\n```json\n{\n    \"idToken\": \"[Google ID Token]\"\n}\n```",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service1/register-pemilik/oauth/google",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"idToken\": \"[Google ID Token]\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const response = pm.response.json();",
+                      "if (response.data && response.data.accessToken) {",
+                      "    pm.environment.set('access_token', response.data.accessToken);",
+                      "}",
+                      "if (response.data && response.data.refreshToken) {",
+                      "    pm.environment.set('refresh_token', response.data.refreshToken);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "response": []
+            },
+            {
+              "name": "OAuth Callback - User (Penyewa)",
+              "description": "Callback URL untuk Google OAuth User. Tidak perlu dipanggil manual - otomatis dari redirect Google.\n\n**Endpoint:** GET {{base_url}}/service1/callback/user",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service1/callback/user"
+              },
+              "response": []
+            },
+            {
+              "name": "OAuth Callback - Pemilik",
+              "description": "Callback URL untuk Google OAuth Pemilik.\n\n**Endpoint:** GET {{base_url}}/service1/callback/pemilik",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service1/callback/pemilik"
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. USER SERVICE (Gateway: /service2/api)",
+      "item": [
+        {
+          "name": "2.1 Profile User CRUD",
+          "item": [
+            {
+              "name": "Get All Profile Users",
+              "description": "Mengambil semua data profile user dengan pagination.\n\n**Endpoint:** GET {{base_url}}/service2/api/profile\n\n**Query Parameters:**\n- `page`: Nomor halaman\n- `limit`: Jumlah data per halaman\n\n**Auth:** Required",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/service2/api/profile?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["service2", "api", "profile"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Create Profile User",
+              "description": "Membuat data profile user baru.\n\n**Endpoint:** POST {{base_url}}/service2/api/profile\n\n**Mode 1: Create with Auth (creates both auth + profile)**\n**Required Fields:**\n- `username`: Username untuk login\n- `email`: Email untuk login\n- `password`: Password untuk login\n- `firstname`: Nama depan\n- `lastname`: Nama belakang\n\n**Optional Fields:**\n- `phone`: Nomor telepon\n- `pictures`: URL gambar/avatar\n\n**Mode 2: Link to Existing Auth**\n**Required Fields:**\n- `authId`: ID dari tabel auth (existing)\n- `firstname`: Nama depan\n- `lastname`: Nama belakang\n\n**Optional Fields:**\n- `phone`: Nomor telepon\n- `pictures`: URL gambar/avatar\n\n**Body (Mode 1 - Create with Auth):**\n```json\n{\n    \"username\": \"johndoe\",\n    \"email\": \"johndoe@example.com\",\n    \"password\": \"password123\",\n    \"firstname\": \"John\",\n    \"lastname\": \"Doe\",\n    \"phone\": \"081234567890\",\n    \"pictures\": \"https://example.com/avatar.jpg\"\n}\n```\n\n**Body (Mode 2 - Link to existing Auth):**\n```json\n{\n    \"authId\": 5,\n    \"firstname\": \"John\",\n    \"lastname\": \"Doe\",\n    \"phone\": \"081234567890\",\n    \"pictures\": \"https://example.com/avatar.jpg\"\n}\n```",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service2/api/profile",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"username\": \"johndoe\",\n    \"email\": \"johndoe@example.com\",\n    \"password\": \"password123\",\n    \"firstname\": \"John\",\n    \"lastname\": \"Doe\",\n    \"phone\": \"081234567890\",\n    \"pictures\": \"https://example.com/avatar.jpg\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Profile User by ID",
+              "description": "Mengambil detail profile user berdasarkan ID.\n\n**Endpoint:** GET {{base_url}}/service2/api/profile/{id}",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service2/api/profile/1",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Update Profile User",
+              "description": "Mengupdate data profile user.\n\n**Endpoint:** PUT {{base_url}}/service2/api/profile/{id}\n\n**Fields yang bisa diupdate:**\n- `firstname`: Nama depan\n- `lastname`: Nama belakang\n- `phone`: Nomor telepon\n- `pictures`: URL gambar/avatar\n\n**Body:**\n```json\n{\n    \"firstname\": \"John Updated\",\n    \"lastname\": \"Doe Updated\",\n    \"phone\": \"081298765432\",\n    \"pictures\": \"https://example.com/new-avatar.jpg\"\n}\n```",
+              "request": {
+                "method": "PUT",
+                "url": "{{base_url}}/service2/api/profile/1",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"firstname\": \"John Updated\",\n    \"lastname\": \"Doe Updated\",\n    \"phone\": \"081298765432\",\n    \"pictures\": \"https://example.com/new-avatar.jpg\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Profile User",
+              "description": "Menghapus data profile user.\n\n**Endpoint:** DELETE {{base_url}}/service2/api/profile/{id}",
+              "request": {
+                "method": "DELETE",
+                "url": "{{base_url}}/service2/api/profile/1",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "2.2 Owner Profile CRUD",
+          "item": [
+            {
+              "name": "Get All Owner Profiles",
+              "description": "Mengambil semua data owner profile dengan pagination.\n\n**Endpoint:** GET {{base_url}}/service2/api/ownerprofile\n\n**Auth:** Required (Superadmin)",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/service2/api/ownerprofile?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["service2", "api", "ownerprofile"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Create Owner Profile",
+              "description": "Membuat data owner profile baru.\n\n**Endpoint:** POST {{base_url}}/service2/api/ownerprofile\n\n**Mode 1: Create with Auth (creates both auth + owner profile)**\nDefault roleId: 2 (Pemilik)\n\n**Required Fields:**\n- `username`: Username untuk login\n- `email`: Email untuk login\n- `password`: Password untuk login\n- `firstname`: Nama depan\n- `lastname`: Nama belakang\n\n**Optional Fields:**\n- `phone`: Nomor telepon\n- `pictures`: URL gambar/avatar\n\n**Mode 2: Link to Existing Auth**\n**Required Fields:**\n- `authId`: ID dari tabel auth (existing)\n- `firstname`: Nama depan\n- `lastname`: Nama belakang\n\n**Optional Fields:**\n- `phone`: Nomor telepon\n- `pictures`: URL gambar/avatar\n\n**Body (Mode 1 - Create with Auth):**\n```json\n{\n    \"username\": \"pemilik1\",\n    \"email\": \"pemilik@example.com\",\n    \"password\": \"password123\",\n    \"firstname\": \"Pemilik\",\n    \"lastname\": \"Kos\",\n    \"phone\": \"081298765432\",\n    \"pictures\": \"https://example.com/owner.jpg\"\n}\n```\n\n**Body (Mode 2 - Link to existing Auth):**\n```json\n{\n    \"authId\": 5,\n    \"firstname\": \"Pemilik\",\n    \"lastname\": \"Kos\",\n    \"phone\": \"081298765432\",\n    \"pictures\": \"https://example.com/owner.jpg\"\n}\n```",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service2/api/ownerprofile",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"username\": \"pemilik1\",\n    \"email\": \"pemilik@example.com\",\n    \"password\": \"password123\",\n    \"firstname\": \"Pemilik\",\n    \"lastname\": \"Kos\",\n    \"phone\": \"081298765432\",\n    \"pictures\": \"https://example.com/owner.jpg\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Owner Profile by ID",
+              "description": "Mengambil detail owner profile berdasarkan ID.\n\n**Endpoint:** GET {{base_url}}/service2/api/ownerprofile/{id}",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service2/api/ownerprofile/1",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Update Owner Profile",
+              "description": "Mengupdate data owner profile.\n\n**Endpoint:** PUT {{base_url}}/service2/api/ownerprofile/{id}\n\n**Fields yang bisa diupdate:**\n- `firstname`: Nama depan\n- `lastname`: Nama belakang\n- `phone`: Nomor telepon\n- `pictures`: URL gambar/avatar\n\n**Body:**\n```json\n{\n    \"firstname\": \"Pemilik Updated\",\n    \"lastname\": \"Kos Updated\",\n    \"phone\": \"081111111111\"\n}\n```",
+              "request": {
+                "method": "PUT",
+                "url": "{{base_url}}/service2/api/ownerprofile/1",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"firstname\": \"Pemilik Updated\",\n    \"lastname\": \"Kos Updated\",\n    \"phone\": \"081111111111\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Owner Profile",
+              "description": "Menghapus data owner profile.\n\n**Endpoint:** DELETE {{base_url}}/service2/api/ownerprofile/{id}",
+              "request": {
+                "method": "DELETE",
+                "url": "{{base_url}}/service2/api/ownerprofile/1",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "2.3 Roles CRUD",
+          "item": [
+            {
+              "name": "Get All Roles",
+              "description": "Mengambil semua data role dengan pagination.\n\n**Endpoint:** GET {{base_url}}/service2/api/role\n\n**Auth:** Required",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/service2/api/role?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["service2", "api", "role"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Create Role",
+              "description": "Membuat role baru.\n\n**Endpoint:** POST {{base_url}}/service2/api/role\n\n**Required Fields:**\n- `name`: Nama role (required)\n- `description`: Deskripsi role (required)\n\n**Body:**\n```json\n{\n    \"name\": \"Manager\",\n    \"description\": \"Manager Tingkat Tinggi\"\n}\n```",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service2/api/role",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Manager\",\n    \"description\": \"Manager Tingkat Tinggi\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Role by ID",
+              "description": "Mengambil detail role berdasarkan ID.\n\n**Endpoint:** GET {{base_url}}/service2/api/role/{id}",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service2/api/role/1",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Update Role",
+              "description": "Mengupdate data role.\n\n**Endpoint:** PUT {{base_url}}/service2/api/role/{id}\n\n**Fields yang bisa diupdate:**\n- `name`: Nama role\n- `description`: Deskripsi role\n\n**Body:**\n```json\n{\n    \"name\": \"Superadmin Updated\",\n    \"description\": \"Super Administrator - Updated\"\n}\n```",
+              "request": {
+                "method": "PUT",
+                "url": "{{base_url}}/service2/api/role/1",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Superadmin Updated\",\n    \"description\": \"Super Administrator - Updated\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Role",
+              "description": "Menghapus role.\n\n**Endpoint:** DELETE {{base_url}}/service2/api/role/{id}",
+              "request": {
+                "method": "DELETE",
+                "url": "{{base_url}}/service2/api/role/1",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. KOS SERVICE (Gateway: /service3)",
+      "item": [
+        {
+          "name": "3.1 KOS Management",
+          "item": [
+            {
+              "name": "Get All KOS (Public)",
+              "description": "Mengambil semua data KOS. Tidak memerlukan authentication.",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/service3/kos?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["service3", "kos"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get KOS by ID (Public)",
+              "description": "Mengambil detail KOS berdasarkan ID.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/kos/1"
+              },
+              "response": []
+            },
+            {
+              "name": "Get My KOS (Pemilik)",
+              "description": "Mengambil daftar KOS yang dimiliki user login.\n\n**Auth:** Required (Pemilik/Superadmin)",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/kos/my",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Create KOS",
+              "description": "Membuat KOS baru.\n\n**Auth:** Required (Pemilik)\n\n**Required Fields:**\n- `name`: Nama KOS (required)\n- `alamat`: Alamat KOS (required)\n\n**Optional Fields:**\n- `description`: Deskripsi KOS\n- `fasilitas`: Array fasilitas (contoh: [\"AC\", \"WiFi\"])\n- `gender`: Tipe penghuni (PRIA, WANITA, MIX)\n\n**Body:**\n```json\n{\n    \"name\": \"KOS Mewah Jakarta\",\n    \"alamat\": \"Jl Sudirman No 100 Jakarta Pusat\",\n    \"description\": \"KOS premium dengan fasilitas lengkap\",\n    \"fasilitas\": [\"AC\", \"WiFi\", \"Kamar Mandi Dalam\", \"Laundry\"],\n    \"gender\": \"PRIA\"\n}\n```",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service3/kos",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"KOS Mewah Jakarta\",\n    \"alamat\": \"Jl Sudirman No 100 Jakarta Pusat\",\n    \"description\": \"KOS premium dengan fasilitas lengkap\",\n    \"fasilitas\": [\"AC\", \"WiFi\", \"Kamar Mandi Dalam\", \"Laundry\"],\n    \"gender\": \"PRIA\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update KOS",
+              "description": "Mengupdate KOS.\n\n**Auth:** Required (Pemilik/Superadmin)",
+              "request": {
+                "method": "PUT",
+                "url": "{{base_url}}/service3/kos/1",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"KOS Mewah Jakarta - Updated\",\n    \"description\": \"KOS premium dengan fasilitas lengkap dan baru\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete KOS",
+              "description": "Menghapus KOS.\n\n**Auth:** Required (Superadmin only)",
+              "request": {
+                "method": "DELETE",
+                "url": "{{base_url}}/service3/kos/1",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "3.2 Room Management",
+          "item": [
+            {
+              "name": "Get All Rooms (Public)",
+              "description": "Mengambil semua room.",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/service3/room?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["service3", "room"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Room by ID (Public)",
+              "description": "Mengambil detail room.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/room/1"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Room",
+              "description": "Membuat room baru.\n\n**Auth:** Required (Pemilik)\n\n**Required Fields:**\n- `kosId`: ID KOS (required)\n- `name`: Nama room (required)\n- `price`: Harga per bulan (required)\n- `status`: Status (AVAILABLE, OCCUPIED, MAINTENANCE)\n\n**Optional Fields:**\n- `description`: Deskripsi room\n- `kapasitas`: Kapasitas maksimal penghuni (default: 1)\n\n**Body:**\n```json\n{\n    \"kosId\": 3,\n    \"name\": \"Room 101\",\n    \"description\": \"Kamar Deluxe dengan AC\",\n    \"price\": 150000,\n    \"status\": \"AVAILABLE\",\n    \"kapasitas\": 1\n}\n```",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service3/room",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"kosId\": 3,\n    \"name\": \"Room 101\",\n    \"description\": \"Kamar Deluxe dengan AC\",\n    \"price\": 150000,\n    \"status\": \"AVAILABLE\",\n    \"kapasitas\": 1\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Room",
+              "description": "Mengupdate room.",
+              "request": {
+                "method": "PUT",
+                "url": "{{base_url}}/service3/room/1",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Room 101 - Premium\",\n    \"price\": 175000\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Room",
+              "description": "Menghapus room.",
+              "request": {
+                "method": "DELETE",
+                "url": "{{base_url}}/service3/room/1",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "3.3 Balance Management",
+          "item": [
+            {
+              "name": "Get My Balance",
+              "description": "Mengambil saldo user login.\n\n**Auth:** Required",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/balance/me",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Balances (Superadmin)",
+              "description": "Mengambil semua balance.\n\n**Auth:** Required (Superadmin)",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/service3/balance?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["service3", "balance"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" }
+                  ]
+                },
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Get User Balance",
+              "description": "Mengambil balance user tertentu.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/balance/user/1",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Update User Balance",
+              "description": "Mengupdate/isi saldo user.\n\n**Auth:** Required (Superadmin)",
+              "request": {
+                "method": "PUT",
+                "url": "{{base_url}}/service3/balance/user/1",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"balance\": 1000000\n}"
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "3.4 Rent Management",
+          "item": [
+            {
+              "name": "Get My Rents",
+              "description": "Mengambil daftar sewa saya.\n\n**Auth:** Required",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/rent/my",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Get Rent by ID",
+              "description": "Mengambil detail sewa.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/rent/1",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Create Rent (Sewa)",
+              "description": "Membuat sewa baru.\n\n**Auth:** Required (User)",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service3/rent",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"roomId\": 1,\n    \"startDate\": \"2024-01-15\",\n    \"endDate\": \"2024-02-15\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cancel Rent",
+              "description": "Membatalkan sewa.",
+              "request": {
+                "method": "PUT",
+                "url": "{{base_url}}/service3/rent/1/cancel",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Complete Rent (Superadmin)",
+              "description": "Menyelesaikan sewa.\n\n**Auth:** Required (Superadmin)",
+              "request": {
+                "method": "PUT",
+                "url": "{{base_url}}/service3/rent/1/complete",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "3.5 Payment Management",
+          "item": [
+            {
+              "name": "Get My Payments",
+              "description": "Mengambil daftar pembayaran saya.\n\n**Auth:** Required",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/payment/my",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Get Payment by ID",
+              "description": "Mengambil detail pembayaran.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/payment/1",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Create Payment",
+              "description": "Membuat tagihan pembayaran.\n\n**Auth:** Required (User)",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service3/payment",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"rentId\": 1,\n    \"paymentMethod\": \"TRANSFER\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Process Payment (Bayar)",
+              "description": "Memproses/membayar tagihan.",
+              "request": {
+                "method": "PUT",
+                "url": "{{base_url}}/service3/payment/1/pay",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "3.6 Facility Management",
+          "item": [
+            {
+              "name": "Get All Facilities (Public)",
+              "description": "Mengambil semua facility dengan pagination.\n\n**Endpoint:** GET {{base_url}}/service3/facility\n\n**Query Parameters:**\n- `page`: Nomor halaman\n- `limit`: Jumlah data per halaman\n- `search`: Pencarian berdasarkan nama",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/service3/facility?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["service3", "facility"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Facility by ID (Public)",
+              "description": "Mengambil detail facility.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/facility/1"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Facility (Superadmin)",
+              "description": "Membuat facility baru.\n\n**Auth:** Required (Superadmin)\n\n**Body:**\n```json\n{\n    \"name\": \"Wifi\",\n    \"desc\": \"Internet kecepatan tinggi\"\n}\n```",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service3/facility",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Wifi\",\n    \"desc\": \"Internet kecepatan tinggi\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Facility (Superadmin)",
+              "description": "Mengupdate facility.",
+              "request": {
+                "method": "PUT",
+                "url": "{{base_url}}/service3/facility/1",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"Wifi 5G\",\n    \"desc\": \"Internet 5G kecepatan tinggi\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Facility (Superadmin)",
+              "description": "Menghapus facility.",
+              "request": {
+                "method": "DELETE",
+                "url": "{{base_url}}/service3/facility/1",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Get Facilities by KOS ID (Public)",
+              "description": "Mengambil fasilitas berdasarkan KOS ID.\n\n**Endpoint:** GET {{base_url}}/service3/facility/kos/{kosId}",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/facility/kos/1"
+              },
+              "response": []
+            },
+            {
+              "name": "Add Facility to KOS (Pemilik)",
+              "description": "Menambahkan facility ke kos.\n\n**Auth:** Required (Pemilik)\n\n**Single Facility:**\n```json\n{\n    \"kosId\": 1,\n    \"facilityId\": 1\n}\n```\n\n**Multiple Facilities:**\n```json\n{\n    \"kosId\": 1,\n    \"facilityIds\": [1, 2, 3]\n}\n```",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service3/facility/kos",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"kosId\": 1,\n    \"facilityIds\": [1, 2, 3]\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Remove Facility from KOS (Pemilik)",
+              "description": "Menghapus facility dari kos.\n\n**Endpoint:** DELETE {{base_url}}/service3/facility/kos/{kosId}/{facilityId}",
+              "request": {
+                "method": "DELETE",
+                "url": "{{base_url}}/service3/facility/kos/1/1",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "3.7 Receipt Management",
+          "item": [
+            {
+              "name": "Get All Receipts",
+              "description": "Mengambil semua receipt.\n\n**Auth:** Required",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/service3/receipt?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["service3", "receipt"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" }
+                  ]
+                },
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Receipts",
+              "description": "Mengambil receipt saya.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/receipt/my",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Get Receipts by User ID",
+              "description": "Mengambil receipt by user ID.\n\n**Auth:** Required (Superadmin)",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/receipt/user/1",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Get Receipt by ID",
+              "description": "Mengambil detail receipt.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/receipt/1",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Create Receipt (Superadmin)",
+              "description": "Membuat receipt baru.\n\n**Auth:** Required (Superadmin)",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service3/receipt",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"paymentId\": 1,\n    \"amount\": 4500000,\n    \"description\": \"Pembayaran sewa bulan Januari 2024\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Receipt (Superadmin)",
+              "description": "Mengupdate receipt.",
+              "request": {
+                "method": "PUT",
+                "url": "{{base_url}}/service3/receipt/1",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"amount\": 5000000\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Receipt (Superadmin)",
+              "description": "Menghapus receipt.",
+              "request": {
+                "method": "DELETE",
+                "url": "{{base_url}}/service3/receipt/1",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. DEMO - Admin Flow (Email/Password)",
+      "item": [
+        {
+          "name": "Admin Operations",
+          "item": [
+            {
+              "name": "Step 1: Login as Superadmin",
+              "description": "Login sebagai superadmin untuk mendapatkan token.\n\n**Test Data:** superadmin@example.com / password123\n\n**Token akan otomatis tersimpan** ke variabel environment setelah login.",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service1/login",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"superadmin@example.com\",\n    \"password\": \"password123\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const response = pm.response.json();",
+                      "if (response.data && response.data.accessToken) {",
+                      "    pm.environment.set('access_token', response.data.accessToken);",
+                      "}",
+                      "if (response.data && response.data.refreshToken) {",
+                      "    pm.environment.set('refresh_token', response.data.refreshToken);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "response": []
+            },
+            {
+              "name": "Step 2: Get All Profile Users",
+              "description": "Ambil semua data user profile.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service2/api/profile?page=1&limit=10",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Step 3: Get All Owner Profiles",
+              "description": "Ambil semua data owner profile.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service2/api/ownerprofile?page=1&limit=10",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Step 4: Get All Balances",
+              "description": "Ambil semua data balance.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/balance?page=1&limit=10",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Step 5: Get All Receipts",
+              "description": "Ambil semua data receipt.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/receipt?page=1&limit=10",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Step 6: Create KOS",
+              "description": "Buat KOS baru.",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service3/kos",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"KOS Admin Demo\",\n    \"alamat\": \"Jl Demo No 1 Jakarta\",\n    \"description\": \"KOS untuk demo admin\",\n    \"fasilitas\": [\"AC\", \"WiFi\"],\n    \"gender\": \"MIX\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Step 7: Create Room",
+              "description": "Buat room baru.",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service3/room",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"kosId\": 1,\n    \"name\": \"Room A1\",\n    \"description\": \"Kamar standar\",\n    \"price\": 100000,\n    \"status\": \"AVAILABLE\",\n    \"kapasitas\": 1\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Step 8: Update User Balance",
+              "description": "Update saldo user.",
+              "request": {
+                "method": "PUT",
+                "url": "{{base_url}}/service3/balance/user/3",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"balance\": 5000000\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Step 9: Complete Rent (Admin)",
+              "description": "Selesaikan sewa.",
+              "request": {
+                "method": "PUT",
+                "url": "{{base_url}}/service3/rent/1/complete",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5. DEMO - User Order Flow (Email/Password)",
+      "item": [
+        {
+          "name": "User Order Operations",
+          "item": [
+            {
+              "name": "Step 1: Login as User",
+              "description": "Login sebagai penyewa/user biasa.\n\n**Test Data:** testuser@example.com / password123\n\n**Token akan otomatis tersimpan** ke variabel environment setelah login.",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service1/login",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"testuser@example.com\",\n    \"password\": \"password123\"\n}"
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const response = pm.response.json();",
+                      "if (response.data && response.data.accessToken) {",
+                      "    pm.environment.set('access_token', response.data.accessToken);",
+                      "}",
+                      "if (response.data && response.data.refreshToken) {",
+                      "    pm.environment.set('refresh_token', response.data.refreshToken);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "response": []
+            },
+            {
+              "name": "Step 2: Get All KOS",
+              "description": "Lihat semua KOS yang tersedia.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/kos?page=1&limit=10"
+              },
+              "response": []
+            },
+            {
+              "name": "Step 3: Get All Rooms",
+              "description": "Lihat semua room yang tersedia.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/room?page=1&limit=10"
+              },
+              "response": []
+            },
+            {
+              "name": "Step 4: Get My Balance",
+              "description": "Cek saldo saya.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/balance/me",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Step 5: Create Rent (Sewa)",
+              "description": "Buat sewa/kos.",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service3/rent",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"roomId\": 1,\n    \"startDate\": \"2024-03-01\",\n    \"endDate\": \"2024-04-01\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Step 6: Create Payment (Buat Tagihan)",
+              "description": "Buat tagihan pembayaran.",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service3/payment",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}"
+                  },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"rentId\": 1,\n    \"paymentMethod\": \"BALANCE\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Step 7: Process Payment (Bayar)",
+              "description": "Proses pembayaran.",
+              "request": {
+                "method": "PUT",
+                "url": "{{base_url}}/service3/payment/1/pay",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Step 8: Get My Receipts",
+              "description": "Lihat receipt saya.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/receipt/my",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Step 9: Get My Rents",
+              "description": "Lihat riwayat sewa saya.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/rent/my",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            },
+            {
+              "name": "Step 10: Get My Payments",
+              "description": "Lihat riwayat pembayaran saya.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service3/payment/my",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{access_token}}" }
+                ]
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "6. DEMO - Google OAuth Flow",
+      "item": [
+        {
+          "name": "OAuth - Login User Flow",
+          "item": [
+            {
+              "name": "Step 1: Get Google OAuth URL (User)",
+              "description": "Dapatkan URL untuk login Google sebagai User/Penyewa.\n\n**Endpoint:** GET {{base_url}}/service1/google/user\n\n**Cara:** Buka URL hasil di browser, login dengan Google, lalu akan di-redirect ke callback dengan token di URL.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service1/google/user"
+              },
+              "response": []
+            },
+            {
+              "name": "Step 2: OAuth Callback - User",
+              "description": "Callback akan otomatis redirect ke application dengan token.\n\n**Endpoint:** GET {{base_url}}/service1/callback/user\n\n**Catatan:** Otomatis diproses oleh browser setelah login Google.",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service1/callback/user"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "OAuth - Login Pemilik Flow",
+          "item": [
+            {
+              "name": "Step 1: Get Google OAuth URL (Pemilik)",
+              "description": "Dapatkan URL untuk login Google sebagai Pemilik.\n\n**Endpoint:** GET {{base_url}}/service1/google/pemilik",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service1/google/pemilik"
+              },
+              "response": []
+            },
+            {
+              "name": "Step 2: OAuth Callback - Pemilik",
+              "description": "Callback akan otomatis redirect ke application dengan token.\n\n**Endpoint:** GET {{base_url}}/service1/callback/pemilik",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/service1/callback/pemilik"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "OAuth - Register with ID Token",
+          "description": "Register baru menggunakan Google ID Token",
+          "item": [
+            {
+              "name": "Register User via Google OAuth (ID Token)",
+              "description": "Register user baru dengan Google ID Token.\n\n**Endpoint:** POST {{base_url}}/service1/register-user/oauth/google\n\n**Body:**\n```json\n{\n    \"idToken\": \"[Google ID Token dari Google Sign-In]\"\n}\n```\n\n**Cara:** Gunakan Google Sign-In di frontend untuk mendapatkan ID Token, lalu kirim ke endpoint ini.",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service1/register-user/oauth/google",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"idToken\": \"[Google ID Token]\"\n}"
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Register Pemilik via Google OAuth (ID Token)",
+              "description": "Register pemilik baru dengan Google ID Token.\n\n**Endpoint:** POST {{base_url}}/service1/register-pemilik/oauth/google\n\n**Body:**\n```json\n{\n    \"idToken\": \"[Google ID Token]\"\n}\n```",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/service1/register-pemilik/oauth/google",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"idToken\": \"[Google ID Token]\"\n}"
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

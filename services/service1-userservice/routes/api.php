@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Responses/JsonResponse.php';
+require_once __DIR__ . '/../responses/JsonResponse.php';
 require_once __DIR__ . '/../modules/roles/Routes.php';
 require_once __DIR__ . '/../modules/profileuser/Routes.php';
 require_once __DIR__ . '/../modules/ownerprofile/Routes.php';

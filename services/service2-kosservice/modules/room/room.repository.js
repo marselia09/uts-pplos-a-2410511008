@@ -25,6 +25,19 @@ const findAllRooms = async () => {
   return rows.map(mapRoom);
 };
 
+const findAllRoomsPaginated = async (limit, offset) => {
+  const rows = await handlequery(
+    `SELECT ${publicRoomColumns} FROM room ORDER BY createdAt DESC LIMIT ? OFFSET ?`,
+    [limit, offset],
+  );
+  return rows.map(mapRoom);
+};
+
+const countRooms = async () => {
+  const result = await handlequery(`SELECT COUNT(*) as total FROM room`);
+  return result[0].total;
+};
+
 const findRoomsByKosId = async (kosId) => {
   const rows = await handlequery(
     `SELECT ${publicRoomColumns} FROM room WHERE kosId = ? ORDER BY createdAt DESC`,
@@ -85,10 +98,12 @@ const deleteRoom = async (id) => {
 };
 
 module.exports = {
+  countRooms,
   countRoomsByKosId,
   createRoom,
   deleteRoom,
   findAllRooms,
+  findAllRoomsPaginated,
   findRoomById,
   findRoomsByKosId,
   findRoomsByKosIdPaginated,

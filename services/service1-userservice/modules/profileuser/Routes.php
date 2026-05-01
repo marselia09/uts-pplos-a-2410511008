@@ -5,7 +5,6 @@ require_once 'Controller.php';
 function handleProfileUserRoutes($path_suffix, $method, $input = []) {
     $controller = new ProfileUserController();
     
-    // Parse pagination params
     $page = $_GET['page'] ?? 1;
     $limit = $_GET['limit'] ?? 10;
     

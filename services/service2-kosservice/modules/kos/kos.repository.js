@@ -106,6 +106,17 @@ const deleteKosById = async (id) => {
   return result.affectedRows > 0;
 };
 
+const getKosFacilities = async (kosId) => {
+  const rows = await handlequery(
+    `SELECT f.* FROM facility f
+     INNER JOIN kos_facility kf ON f.id = kf.facilityId
+     WHERE kf.kosId = ?
+     ORDER BY f.name`,
+    [kosId],
+  );
+  return rows;
+};
+
 module.exports = {
   countKos,
   countKosByPemilikId,
@@ -116,6 +127,7 @@ module.exports = {
   findAllKosPaginated,
   findKosById,
   findKosByPemilikId,
+  getKosFacilities,
   mapKos,
   updateKos,
 };

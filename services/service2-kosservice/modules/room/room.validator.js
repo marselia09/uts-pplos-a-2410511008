@@ -5,7 +5,7 @@ const fail = (message, statusCode = 400) => {
 };
 
 const nameMaxLen = 191;
-const validStatuses = new Set(["AVAILABLE", "FULL", "MAINTENANCE"]);
+const validStatuses = new Set(["AVAILABLE", "OCCUPIED", "FULL", "MAINTENANCE"]);
 
 const assertString = (val, name, maxLen) => {
   if (!val || typeof val !== "string" || val.trim().length === 0 || val.length > maxLen) {

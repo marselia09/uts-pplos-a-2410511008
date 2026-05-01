@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/../../Config/Database.php';
-require_once __DIR__ . '/../../Responses/JsonResponse.php';
+require_once __DIR__ . '/../../config/Database.php';
+require_once __DIR__ . '/../../responses/JsonResponse.php';
 
 class ProfileUserService {
     private $pdo;
@@ -14,11 +14,11 @@ class ProfileUserService {
         $offset = ($page - 1) * $limit;
         
         // Get total count
-        $countStmt = $this->pdo->query('SELECT COUNT(*) FROM `user_profile`');
+        $countStmt = $this->pdo->query('SELECT COUNT(*) FROM `userprofile`');
         $total = $countStmt->fetchColumn();
         
         // Get paginated data
-        $stmt = $this->pdo->query("SELECT * FROM `user_profile` ORDER BY `id` LIMIT $limit OFFSET $offset");
+        $stmt = $this->pdo->query("SELECT * FROM `userprofile` ORDER BY `id` LIMIT $limit OFFSET $offset");
         $data = $stmt->fetchAll();
         
         return [
@@ -35,19 +35,19 @@ class ProfileUserService {
     }
 
     public function getByAuthId($authId) {
-        $stmt = $this->pdo->prepare('SELECT * FROM `user_profile` WHERE `authId` = ?');
+        $stmt = $this->pdo->prepare('SELECT * FROM `userprofile` WHERE `authId` = ?');
         $stmt->execute([$authId]);
         return $stmt->fetch();
     }
 
     public function findById($id) {
-        $stmt = $this->pdo->prepare('SELECT * FROM `user_profile` WHERE `id` = ?');
+        $stmt = $this->pdo->prepare('SELECT * FROM `userprofile` WHERE `id` = ?');
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
 
     public function create($data) {
-        $stmt = $this->pdo->prepare('INSERT INTO `user_profile` (`firstname`, `lastname`, `phone`, `pictures`, `authId`) VALUES (?, ?, ?, ?, ?)');
+        $stmt = $this->pdo->prepare('INSERT INTO `userprofile` (`firstname`, `lastname`, `phone`, `pictures`, `authId`) VALUES (?, ?, ?, ?, ?)');
         $stmt->execute([
             $data['firstname'], 
             $data['lastname'], 
@@ -57,6 +57,46 @@ class ProfileUserService {
         ]);
         $newId = $this->pdo->lastInsertId();
         return $this->findById($newId);
+    }
+
+public function createWithAuth($data) {
+        $this->pdo->beginTransaction();
+        
+        try {
+            $hashedPassword = password_hash($data['password'], PASSWORD_BCRYPT);
+            $roleId = 3;
+            if (($data['role'] ?? '') === 'Pemilik') {
+                $roleId = 2;
+            } elseif (($data['role'] ?? '') === 'Superadmin') {
+                $roleId = 1;
+            }
+            
+            $stmt = $this->pdo->prepare('INSERT INTO `auth` (`username`, `email`, `password`, `roleId`) VALUES (?, ?, ?, ?)');
+            $stmt->execute([
+                $data['username'],
+                $data['email'],
+                $hashedPassword,
+                $roleId
+            ]);
+            $authId = $this->pdo->lastInsertId();
+            
+            $stmt = $this->pdo->prepare('INSERT INTO `userprofile` (`firstname`, `lastname`, `phone`, `pictures`, `authId`) VALUES (?, ?, ?, ?, ?)');
+            $stmt->execute([
+                $data['firstname'],
+                $data['lastname'],
+                $data['phone'] ?? null,
+                $data['pictures'] ?? null,
+                $authId
+            ]);
+            $profileId = $this->pdo->lastInsertId();
+            
+            $this->pdo->commit();
+            
+            return $this->findById($profileId);
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
     }
 
     public function update($id, $data) {
@@ -89,7 +129,7 @@ class ProfileUserService {
         }
         
         $params[] = $id;
-        $sql = 'UPDATE `user_profile` SET ' . implode(', ', $updates) . ', `updatedAt` = CURRENT_TIMESTAMP WHERE `id` = ?';
+        $sql = 'UPDATE `userprofile` SET ' . implode(', ', $updates) . ', `updatedAt` = CURRENT_TIMESTAMP WHERE `id` = ?';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         
@@ -102,7 +142,7 @@ class ProfileUserService {
             throw new Exception('Profile not found');
         }
         
-        $stmt = $this->pdo->prepare('DELETE FROM `user_profile` WHERE `id` = ?');
+        $stmt = $this->pdo->prepare('DELETE FROM `userprofile` WHERE `id` = ?');
         $stmt->execute([$id]);
         return true;
     }

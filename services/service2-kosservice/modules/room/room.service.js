@@ -12,6 +12,14 @@ const findAllRooms = async () => {
   return await repository.findAllRooms();
 };
 
+const findAllRoomsPaginated = async (limit, offset) => {
+  return await repository.findAllRoomsPaginated(limit, offset);
+};
+
+const countRooms = async () => {
+  return await repository.countRooms();
+};
+
 const findRoomsByKosId = async (kosId) => {
   return await repository.findRoomsByKosId(kosId);
 };
@@ -73,10 +81,12 @@ const deleteRoom = async (id, pemilikId) => {
 };
 
 module.exports = {
+  countRooms,
   countRoomsByKosId,
   createRoom,
   deleteRoom,
   findAllRooms,
+  findAllRoomsPaginated,
   findRoomById,
   findRoomsByKosId,
   findRoomsByKosIdPaginated,

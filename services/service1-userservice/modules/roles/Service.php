@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/../../Config/Database.php';
-require_once __DIR__ . '/../../Responses/JsonResponse.php';
+require_once __DIR__ . '/../../config/Database.php';
+require_once __DIR__ . '/../../responses/JsonResponse.php';
 
 class RolesService {
     private $pdo;

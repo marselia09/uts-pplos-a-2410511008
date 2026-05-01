@@ -20,22 +20,25 @@ const handleError = (res, error) => {
 
 const listRooms = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || DEFAULT_PAGE;
+    const limit = parseInt(req.query.limit) || DEFAULT_LIMIT;
+    const offset = (page - 1) * limit;
     const kosId = req.query.kosId ? validator.validateKosId(req.query.kosId) : null;
     
+    let result, total;
+    
     if (kosId) {
-      const page = parseInt(req.query.page) || DEFAULT_PAGE;
-      const limit = parseInt(req.query.limit) || DEFAULT_LIMIT;
-      const offset = (page - 1) * limit;
-
-      const result = await roomService.findRoomsByKosIdPaginated(kosId, limit, offset);
-      const total = await roomService.countRoomsByKosId(kosId);
-      const meta = { page, limit, total, totalPages: Math.ceil(total / limit) };
-
-      sendSuccess(res, 200, `Daftar ${config.label.toLowerCase()} berhasil diambil`, result, meta);
+      result = await roomService.findRoomsByKosIdPaginated(kosId, limit, offset);
+      total = await roomService.countRoomsByKosId(kosId);
     } else {
-      const rooms = await roomService.findAllRooms();
-      sendSuccess(res, 200, `Daftar ${config.label.toLowerCase()} berhasil diambil`, rooms);
+      result = await roomService.findAllRoomsPaginated(limit, offset);
+      total = await roomService.countRooms();
     }
+    
+    const totalPages = Math.ceil(total / limit);
+    const meta = { page, limit, total, totalPages };
+    
+    sendSuccess(res, 200, `Daftar ${config.label.toLowerCase()} berhasil diambil`, result, meta);
   } catch (error) {
     handleError(res, error);
   }

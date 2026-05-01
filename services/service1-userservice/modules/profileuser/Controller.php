@@ -2,7 +2,8 @@
 
 require_once 'Service.php';
 require_once 'Validator.php';
-require_once __DIR__ . '/../../Responses/JsonResponse.php';
+require_once __DIR__ . '/../../responses/JsonResponse.php';
+require_once __DIR__ . '/../../middlewares/AuthMiddleware.php';
 
 class ProfileUserController {
     private $service;
@@ -14,21 +15,20 @@ class ProfileUserController {
     }
 
     private function getCurrentUserRole() {
-        // TODO: Implement real auth check from session/JWT
-        // For now, mock based on request (replace with real auth)
-        $headers = getallheaders();
-        $authHeader = $headers['Authorization'] ?? $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-        if (strpos($authHeader, 'super_admin') !== false) {
-            return 'super_admin';
-        }
-        return 'user'; // default
+        $user = AuthMiddleware::getCurrentUser();
+        return $user['role'] ?? 'user';
+    }
+
+    private function getCurrentUserId() {
+        $user = AuthMiddleware::getCurrentUser();
+        return $user['id'] ?? null;
     }
 
     private function canAccessProfile($profile, $action = 'read') {
         $userRole = $this->getCurrentUserRole();
-        $currentUserId = $_SESSION['auth_id'] ?? 1; // Mock - replace with real session/JWT
+        $currentUserId = $this->getCurrentUserId();
         
-        if ($userRole === 'super_admin') {
+        if ($userRole === 'Superadmin' || $userRole === 'Pemilik') {
             return true;
         }
         
@@ -37,6 +37,9 @@ class ProfileUserController {
 
     public function index($page = 1, $limit = 10) {
         try {
+            if (!AuthMiddleware::authMiddleware()) {
+                return;
+            }
             $result = $this->service->getAll((int)$page, (int)$limit);
             JsonResponse::success($result['data'], 'Profile ditemukan', $result['pagination']);
         } catch (Exception $e) {
@@ -46,15 +49,25 @@ class ProfileUserController {
 
     public function store($input) {
         try {
-            $this->validator->validateStore($input);
-            if ($this->getCurrentUserRole() !== 'super_admin') {
-                JsonResponse::error('Only super admin can create profiles', 403);
+            if (!AuthMiddleware::authMiddleware()) {
                 return;
             }
-            $input['authId'] = $input['authId'] ?? 0; // From request
-            $this->validator->validateAuthId($input['authId']);
-            $newProfile = $this->service->create($input);
-            JsonResponse::created($newProfile ?? [], 'Profile berhasil dibuat');
+            if (!AuthMiddleware::requireSuperadmin()) {
+                return;
+            }
+            $this->validator->validateStore($input);
+            
+            if (!empty($input['username']) && !empty($input['email']) && !empty($input['password'])) {
+                $newProfile = $this->service->createWithAuth($input);
+                JsonResponse::created($newProfile ?? [], 'User dan Profile berhasil dibuat');
+            } else {
+                if (empty($input['authId'])) {
+                    JsonResponse::error('authId wajib diisi jika tidak menggunakan username/email/password', 400);
+                    return;
+                }
+                $newProfile = $this->service->create($input);
+                JsonResponse::created($newProfile ?? [], 'Profile berhasil dibuat');
+            }
         } catch (Exception $e) {
             JsonResponse::error($e->getMessage(), 400);
         }
@@ -62,6 +75,9 @@ class ProfileUserController {
 
     public function show($id) {
         try {
+            if (!AuthMiddleware::authMiddleware()) {
+                return;
+            }
             $this->validator->validateId($id);
             $profile = $this->service->findById($id);
             if (!$profile) {
@@ -82,6 +98,9 @@ class ProfileUserController {
 
     public function update($input, $id) {
         try {
+            if (!AuthMiddleware::authMiddleware()) {
+                return;
+            }
             $this->validator->validateId($id);
             $this->validator->validateUpdate($input);
             
@@ -105,15 +124,16 @@ class ProfileUserController {
 
     public function destroy($id) {
         try {
+            if (!AuthMiddleware::authMiddleware()) {
+                return;
+            }
+            if (!AuthMiddleware::requireSuperadmin()) {
+                return;
+            }
             $this->validator->validateId($id);
             $profile = $this->service->findById($id);
             if (!$profile) {
                 JsonResponse::notFound('Profile', $id);
-                return;
-            }
-            
-            if ($this->getCurrentUserRole() !== 'super_admin') {
-                JsonResponse::error('Only super admin can delete profiles', 403);
                 return;
             }
             
