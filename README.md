@@ -8,7 +8,7 @@
 
 ## Demo Video
 
-## Silakanonton video demo sistem di: [YouTube Demo Video](https://youtube.com/watch?v=EXAMPLE_LINK)
+## Silakanonton video demo sistem di: [YouTube Demo Video](https://youtu.be/K6Og7hR6vD4?si=vmB6PdXfKv_KV3D6)
 
 ---
 
